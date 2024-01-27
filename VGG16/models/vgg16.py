@@ -40,7 +40,7 @@ def build_and_train_model(train_images, train_labels, val_images, val_labels):
     vgg16_model.summary()
 
     # Callback pentru salvarea celui mai bun model
-    checkpoint = ModelCheckpoint('../../../mini_models_vgg16/best_model.h5',
+    checkpoint = ModelCheckpoint('../../../model256_100epochs/best_model.h5',
                                  monitor='val_loss', mode='min', save_best_only=True)
 
     # Configurarea ImageDataGenerator
@@ -52,7 +52,7 @@ def build_and_train_model(train_images, train_labels, val_images, val_labels):
     validation_generator = val_datagen.flow(val_images, val_labels, batch_size=2)
 
     print("Începem antrenamentul modelului...")
-    vgg16_model.fit(train_generator, steps_per_epoch=len(train_images) // 4, epochs=50,
+    vgg16_model.fit(train_generator, steps_per_epoch=len(train_images) // 4, epochs=100,
                     validation_data=validation_generator, validation_steps=len(val_images) // 4,
                     callbacks=[checkpoint, tensorboard_callback])
 
@@ -65,19 +65,19 @@ def build_and_train_model(train_images, train_labels, val_images, val_labels):
 
 if __name__ == "__main__":
     # histogram_freq=1 va scrie histograma gradientilor și a ponderilor pentru fiecare epoca
-    tensorboard_callback = TensorBoard(log_dir='../logs', histogram_freq=1)
+    tensorboard_callback = TensorBoard(log_dir='../logs_new', histogram_freq=1)
 
     print("Încărcăm și prelucrăm imaginile...")
     path_to_images = '../data/512x384'
     path_to_csv = '../data/koniq10k_scores_and_distributions.csv'
 
     images, labels = load_and_process_images(path_to_images, path_to_csv)
-    train_images, val_images, train_labels, val_labels = split_data(images, labels)
+    train_img, val_img, train_lb, val_lb = split_data(images, labels)
 
     print("Antrenăm modelul VGG16...")
-    model = build_and_train_model(train_images, train_labels, val_images, val_labels)
+    model = build_and_train_model(train_img, train_lb, val_img, val_lb)
 
     # Salvează modelul pentru a fi folosit în predicții
     print("Salvăm modelul antrenat...")
-    model.save('../../../models_vgg16/vgg16_model.h5')
+    model.save('../../../model256_100epochs/vgg16_model.h5')
     print("Modelul a fost salvat cu succes.")

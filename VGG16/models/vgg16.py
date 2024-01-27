@@ -18,62 +18,44 @@ def custom_accuracy(y_true, y_pred, threshold=0.1):
 
 
 def build_and_train_model(train_images, train_labels, val_images, val_labels):
-    # Definirea modelului VGG16 fără straturile superioare
-    # Am început cu modelul VGG16 pre-antrenat (folosind greutăți de la 'ImageNet') ca bază.
-    # Acesta este un model de rețea neurală convoluțională popular pentru procesarea imaginilor.
+    # Definirea modelului de bază (fără straturile superioare) pre-antrenat folosind greutăți de la 'ImageNet'
     print("Construim modelul VGG16...")
     base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 
-    # Adăugarea de noi straturi pentru regresie în loc de clasificare
-    # Am eliminat straturile superioare ale VGG16 și le-am înlocuit cu propriile straturi.
-    # Acest lucru include un strat 'Flatten' pentru aplatizarea output-ului 3D al rețelei VGG16 într-un vector 1D,
-    # urmat de două straturi 'Dense', unul cu 256 de neuroni și activare 'relu',
-    # și un altul cu un singur neuron și activare 'linear'.
-    # Straturile Dense suplimentare sunt folosite pentru regresie în loc de clasificare.
-    x = Flatten()(base_model.output)
-    x = Dense(256, activation='relu')(x)
+    # Adăugarea de noi straturi Dense pentru regresie
+    x = Flatten()(base_model.output)  # Strat aplatizare output 3D al rețelei într-un vector 1D
+    x = Dense(256, activation='relu')(x)  # 256 neuroni
     output = Dense(1, activation='linear')(x)  # Un singur neuron pentru outputul scalar (scorul de calitate)
 
     vgg16_model = Model(inputs=base_model.input, outputs=output)
 
-    # Congelarea straturilor din modelul VGG16 de bază pentru a nu le antrena
+    # Congelarea straturilor din modelul de bază pentru a păstra proprietățile modelului mai complex
     for layer in base_model.layers:
         layer.trainable = False
 
-    # Compilarea modelului cu MSE
     print("Compilăm modelul...")
-    # vgg16_model.compile(optimizer=Adam(learning_rate=0.0001), loss='mean_squared_error')
     vgg16_model.compile(optimizer=Adam(learning_rate=0.0001),
-                        loss='mean_squared_error',
-                        metrics=[custom_accuracy])
+                        loss='mean_squared_error', metrics=[custom_accuracy])
+
+    vgg16_model.summary()
 
     # Callback pentru salvarea celui mai bun model
-    checkpoint = ModelCheckpoint('../../../models_vgg16/best_model.h5', monitor='val_loss', mode='min', save_best_only=True)
+    checkpoint = ModelCheckpoint('../../../mini_models_vgg16/best_model.h5',
+                                 monitor='val_loss', mode='min', save_best_only=True)
 
     # Configurarea ImageDataGenerator
     train_datagen = ImageDataGenerator(rescale=1./255)  # Adăugare normalizare ca preprocesare
     val_datagen = ImageDataGenerator(rescale=1./255)
 
     # Crearea Generatoarelor de Date folosind 'flow'
-    train_generator = train_datagen.flow(
-        train_images, train_labels,
-        batch_size=2)
+    train_generator = train_datagen.flow(train_images, train_labels, batch_size=2)
+    validation_generator = val_datagen.flow(val_images, val_labels, batch_size=2)
 
-    validation_generator = val_datagen.flow(
-        val_images, val_labels,
-        batch_size=2)
-
-    # Antrenarea modelului folosind fit_generator
     print("Începem antrenamentul modelului...")
-    vgg16_model.fit(
-        train_generator,
-        steps_per_epoch=len(train_images) // 4,
-        epochs=50,
-        validation_data=validation_generator,
-        validation_steps=len(val_images) // 4,
-        callbacks=[checkpoint, tensorboard_callback])
+    vgg16_model.fit(train_generator, steps_per_epoch=len(train_images) // 4, epochs=50,
+                    validation_data=validation_generator, validation_steps=len(val_images) // 4,
+                    callbacks=[checkpoint, tensorboard_callback])
 
-    # Evaluarea modelului pe setul de validare
     print("Evaluăm modelul pe setul de validare...")
     val_loss = vgg16_model.evaluate(validation_generator, steps=len(val_images) // 4)
     print(f'MSE Loss on validation set: {val_loss}')
@@ -93,10 +75,9 @@ if __name__ == "__main__":
     train_images, val_images, train_labels, val_labels = split_data(images, labels)
 
     print("Antrenăm modelul VGG16...")
-    # custom_callback = CustomCallback()
     model = build_and_train_model(train_images, train_labels, val_images, val_labels)
 
     # Salvează modelul pentru a fi folosit în predicții
     print("Salvăm modelul antrenat...")
-    model.save('vgg16_model.h5')
+    model.save('../../../models_vgg16/vgg16_model.h5')
     print("Modelul a fost salvat cu succes.")

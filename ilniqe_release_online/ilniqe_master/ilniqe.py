@@ -12,7 +12,7 @@ from scipy.optimize import fmin
 
 import time
 # import ray
-from matlab_resize import MATLABLikeResize
+from repo.ilniqe_release_online.ilniqe_master.matlab_resize import MATLABLikeResize
 
 def reorder_image(img, input_order='HWC'):
     """Reorder images to 'HWC' order.
@@ -447,18 +447,30 @@ def calculate_ilniqe(img, crop_border, input_order='HWC', num_cpus=3, resize=Tru
 
     return ilniqe_result
 
-if __name__ == '__main__':
+
+def measure_ilniqe(img_path):
+    img = cv2.imread(img_path)
+    quality_score = calculate_ilniqe(img, 0, input_order='HWC', resize=True, version='python')
+
+    return quality_score
+
+
+def main():
     import warnings
 
-    img_path = './pepper_exa/pepper_1.png'
-    # img_path = './pepper_exa/parrots_distorted.bmp'
-    img = cv2.imread(img_path)
+    image_path = "..\\..\\VGG16\\data\\512x384\\826373.jpg"
+
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', category=RuntimeWarning)
         time_start = time.time()
 
-        niqe_result = calculate_ilniqe(img, 0, input_order='HWC', resize=True, version='python')
+        quality_score = measure_ilniqe(image_path)
 
         time_used = time.time() - time_start
-    print(niqe_result)
+
+    print(f'IL-NIQE Quality Score: {quality_score:.4f}')
     print(f'\t time used in sec: {time_used:.4f}')
+
+
+if __name__ == "__main__":
+    main()

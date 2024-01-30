@@ -5,7 +5,8 @@ from scipy.special import gamma as tgamma
 from ctypes import c_double
 from repo.brisque_release_learnopencv.Python.libsvm.python.svm \
     import (gen_svm_nodearray, PRECOMPUTED, ONE_CLASS, EPSILON_SVR, NU_SVC)
-import svmutil
+# import svmutil
+import repo.brisque_release_learnopencv.Python.libsvm.python.svmutil as svmutil
 from svmutil import *
 
 
@@ -136,7 +137,6 @@ def compute_features(img):
 
 
 # function to calculate BRISQUE quality score 
-# takes input of the image path
 def measure_brisque(img_path):
     # read image from given path
     dis = cv2.imread(img_path, 1)
@@ -188,15 +188,15 @@ def measure_brisque(img_path):
     dec_values = (c_double * nr_classifier)()
 
     # calculate the quality score of the image using the model and svm_node_array
-    qualityscore = svmutil.libsvm.svm_predict_probability(model, x, dec_values)
+    quality_score = svmutil.libsvm.svm_predict_probability(model, x, dec_values)
 
-    return qualityscore
+    return quality_score
 
 
 def main():
     image_path = "..\\..\\..\\..\\VGG16\\data\\512x384\\826373.jpg"
-    qualityscore = measure_brisque(image_path)
-    print("Score of the given image: ", qualityscore)
+    quality_score = measure_brisque(image_path)
+    print(f'BRISQUE learnOpenCv Quality Score: {quality_score:.4f}')
 
 
 if __name__ == "__main__":

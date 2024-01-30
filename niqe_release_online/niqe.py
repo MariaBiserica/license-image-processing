@@ -201,7 +201,7 @@ def write_params_to_txt(params, output_file):
             f.write(f'{key}:\n{value}\n\n')
 
 
-def niqe(inputImgData):
+def niqe(input_img_data):
     patch_size = 96
     module_path = dirname(__file__)
 
@@ -214,7 +214,7 @@ def niqe(inputImgData):
     pop_mu = np.ravel(params["pop_mu"])
     pop_cov = params["pop_cov"]
 
-    M, N = inputImgData.shape
+    M, N = input_img_data.shape
 
     # assert C == 1, "niqe called with videos containing %d channels. Please supply only the luminance channel" % (C,)
     assert M > (
@@ -222,7 +222,7 @@ def niqe(inputImgData):
     assert N > (
                 patch_size * 2 + 1), "niqe called with small frame size, requires > 192x192 resolution video using current training parameters"
 
-    feats = get_patches_test_features(inputImgData, patch_size)
+    feats = get_patches_test_features(input_img_data, patch_size)
     sample_mu = np.mean(feats, axis=0)
     sample_cov = np.cov(feats.T)
 
@@ -234,24 +234,18 @@ def niqe(inputImgData):
     return niqe_score
 
 
+def measure_niqe(img_path):
+    img = np.array(Image.open(img_path).convert('LA'))[:, :, 0]
+    quality_score = niqe(img)
+
+    return quality_score
+
+
+def main():
+    image_path = "..\\VGG16\\data\\512x384\\826373.jpg"
+    quality_score = measure_niqe(image_path)
+    print(f'NIQE Quality Score: {quality_score:.4f}')
+
+
 if __name__ == "__main__":
-    ref = np.array(Image.open('./test_imgs/bikes.bmp').convert('LA'))[:, :, 0]  # ref
-    dis = np.array(Image.open('./test_imgs/bikes_distorted.bmp').convert('LA'))[:, :, 0]  # dis
-
-    print('NIQE of ref bikes image is: %0.4f' % niqe(ref))
-    print('NIQE of dis bikes image is: %0.4f' % niqe(dis))
-
-    ref = np.array(Image.open('./test_imgs/parrots.bmp').convert('LA'))[:, :, 0]  # ref
-    dis = np.array(Image.open('./test_imgs/parrots_distorted.bmp').convert('LA'))[:, :, 0]  # dis
-
-    print('NIQE of ref parrot image is: %0.4f' % niqe(ref))
-    print('NIQE of dis parrot image is: %0.4f' % niqe(dis))
-
-    ref = np.array(Image.open('./test_imgs/pepper_0.png').convert('LA'))[:, :, 0]  # ref
-    print('NIQE of pepper_0 image is: %0.4f' % niqe(ref))
-
-    ref = np.array(Image.open('./test_imgs/pepper_1.png').convert('LA'))[:, :, 0]  # ref
-    print('NIQE of pepper_1 image is: %0.4f' % niqe(ref))
-
-    ref = np.array(Image.open('./test_imgs/pepper_2.png').convert('LA'))[:, :, 0]  # ref
-    print('NIQE of pepper_2 image is: %0.4f' % niqe(ref))
+    main()

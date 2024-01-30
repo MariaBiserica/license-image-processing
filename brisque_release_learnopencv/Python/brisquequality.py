@@ -214,7 +214,7 @@ print ("Score of the given image: {}".format(qualityscore))
 
 def main():
     # Calea relativă către imaginea ta locală
-    image_path = "..\\..\\ilniqe_release_online\\IL-NIQE-master\\pepper_exa\\bikes.bmp"
+    image_path = "../../ilniqe_release_online/ilniqe_master\\pepper_exa\\bikes.bmp"
 
     # Calculează scorul de calitate
     quality_score = test_measure_BRISQUE(image_path)

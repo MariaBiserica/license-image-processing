@@ -11,7 +11,9 @@ import scipy.optimize as optimize
 import skimage.io
 from libsvm import svmutil
 import os
-from brisque.models import MODEL_PATH
+# from brisque.models import MODEL_PATH
+from repo.brisque_release_online.brisque_master.brisque.models import MODEL_PATH
+
 
 class BRISQUE:
     def __init__(self, url=False):

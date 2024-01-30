@@ -1,14 +1,27 @@
 import os
+import pandas as pd
 from keras.applications import VGG16
 from keras.models import Model
 from keras.layers import Dense, Flatten
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, TensorBoard
-from repo.VGG16.utils.data_processing import load_and_process_images, split_data
 from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+
+# def custom_generator(image_generator, labels):
+#     for batch in image_generator:
+#         idx = (image_generator.batch_index - 1) * image_generator.batch_size
+#         yield batch, labels[idx: idx + image_generator.batch_size]
+def custom_generator(image_generator, labels):
+    while True:
+        batch_imgs, batch_idx = next(image_generator), image_generator.batch_index
+        start_idx = (batch_idx - 1) * image_generator.batch_size
+        end_idx = start_idx + batch_imgs.shape[0]  # Ajustează pentru ultimul batch
+        batch_labels = labels[start_idx:end_idx]
+        yield batch_imgs, batch_labels
 
 
 # K.mean(...) calculează media acestor valori, ceea ce reprezintă acuratețea
@@ -16,7 +29,7 @@ def custom_accuracy(y_true, y_pred, threshold=0.1):
     return K.mean(K.cast(K.abs(y_true - y_pred) < threshold, 'float32'))
 
 
-def build_and_train_model(train_images, train_labels, val_images, val_labels):
+def build_and_train_model(train_dir, val_dir, train_labels_file, val_labels_file, batch_size, epochs):
     # Definirea modelului de bază (fără straturile superioare) pre-antrenat folosind greutăți de la 'ImageNet'
     print("Construim modelul VGG16...")
     base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
@@ -38,24 +51,39 @@ def build_and_train_model(train_images, train_labels, val_images, val_labels):
     vgg16_model.summary()
 
     # Callback pentru salvarea celui mai bun model
-    checkpoint = ModelCheckpoint('../../../model256_100epochs/best_model.h5',
+    checkpoint = ModelCheckpoint('../../../model_new/best_model.h5',
                                  monitor='val_loss', mode='min', save_best_only=True)
 
     # Configurarea ImageDataGenerator
     train_datagen = ImageDataGenerator(rescale=1./255)  # Adăugare normalizare ca preprocesare
     val_datagen = ImageDataGenerator(rescale=1./255)
 
-    # Crearea Generatoarelor de Date folosind 'flow'
-    train_generator = train_datagen.flow(train_images, train_labels, batch_size=2)
-    validation_generator = val_datagen.flow(val_images, val_labels, batch_size=2)
+    # Crearea Generatoarelor de Date folosind 'flow_from_directory'
+    train_generator = train_datagen.flow_from_directory(
+        train_dir, target_size=(224, 224), batch_size=batch_size, class_mode=None)
+    validation_generator = val_datagen.flow_from_directory(
+        val_dir, target_size=(224, 224), batch_size=batch_size, class_mode=None)
+
+    # Citirea etichetelor din fișierele CSV
+    train_labels = pd.read_csv(train_labels_file)['MOS'].values
+    val_labels = pd.read_csv(val_labels_file)['MOS'].values
+
+    train_custom_generator = custom_generator(train_generator, train_labels)
+    validation_custom_generator = custom_generator(validation_generator, val_labels)
 
     print("Începem antrenamentul modelului...")
-    vgg16_model.fit(train_generator, steps_per_epoch=len(train_images) // 4, epochs=100,
-                    validation_data=validation_generator, validation_steps=len(val_images) // 4,
-                    callbacks=[checkpoint, tensorboard_callback])
+    vgg16_model.fit(
+        train_custom_generator,
+        steps_per_epoch=train_generator.samples // 16,
+        epochs=epochs,
+        validation_data=validation_custom_generator,
+        validation_steps=validation_generator.samples // 16,
+        callbacks=[checkpoint, tensorboard_callback])
 
     print("Evaluăm modelul pe setul de validare...")
-    val_loss = vgg16_model.evaluate(validation_generator, steps=len(val_images) // 4)
+    val_loss = vgg16_model.evaluate(
+        validation_custom_generator,
+        steps=validation_generator.samples // 16)
     print(f'MSE Loss on validation set: {val_loss}')
 
     return vgg16_model
@@ -65,17 +93,15 @@ if __name__ == "__main__":
     # histogram_freq=1 va scrie histograma gradientilor și a ponderilor pentru fiecare epoca
     tensorboard_callback = TensorBoard(log_dir='../logs_new', histogram_freq=1)
 
-    print("Încărcăm și prelucrăm imaginile...")
-    path_to_images = '../data/512x384'
-    path_to_csv = '../data/koniq10k_scores_and_distributions.csv'
-
-    images, labels = load_and_process_images(path_to_images, path_to_csv)
-    train_img, val_img, train_lb, val_lb = split_data(images, labels)
+    train_directory = '../data/train'
+    val_directory = '../data/validation'
+    train_lb = '../data/train_labels.csv'
+    val_lb = '../data/val_labels.csv'
 
     print("Antrenăm modelul VGG16...")
-    model = build_and_train_model(train_img, train_lb, val_img, val_lb)
+    model = build_and_train_model(train_directory, val_directory, train_lb, val_lb, 4, 2)
 
     # Salvează modelul pentru a fi folosit în predicții
     print("Salvăm modelul antrenat...")
-    model.save('../../../model256_100epochs/vgg16_model.h5')
+    model.save('../../../model_new/vgg16_model.h5')
     print("Modelul a fost salvat cu succes.")

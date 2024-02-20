@@ -38,7 +38,7 @@ def build_and_train_model(train_images, train_labels, val_images, val_labels):
     vgg16_model.summary()
 
     # Callback pentru salvarea celui mai bun model
-    checkpoint = ModelCheckpoint('../../../model256_100epochs/best_model.h5',
+    checkpoint = ModelCheckpoint('../../../model_new/best_model.h5',
                                  monitor='val_loss', mode='min', save_best_only=True)
 
     # Configurarea ImageDataGenerator
@@ -50,7 +50,7 @@ def build_and_train_model(train_images, train_labels, val_images, val_labels):
     validation_generator = val_datagen.flow(val_images, val_labels, batch_size=2)
 
     print("Începem antrenamentul modelului...")
-    vgg16_model.fit(train_generator, steps_per_epoch=len(train_images) // 4, epochs=100,
+    vgg16_model.fit(train_generator, steps_per_epoch=len(train_images) // 4, epochs=40,
                     validation_data=validation_generator, validation_steps=len(val_images) // 4,
                     callbacks=[checkpoint, tensorboard_callback])
 
@@ -77,5 +77,5 @@ if __name__ == "__main__":
 
     # Salvează modelul pentru a fi folosit în predicții
     print("Salvăm modelul antrenat...")
-    model.save('../../../model256_100epochs/vgg16_model.h5')
+    model.save('../../../model_new/vgg16_model.h5')
     print("Modelul a fost salvat cu succes.")

@@ -6,7 +6,20 @@ from keras.preprocessing.image import img_to_array
 from sklearn.model_selection import train_test_split
 
 
-def load_and_process_images(directory, csv_file, image_size=(224, 224)):
+# def find_image_score(image_name, csv_file):
+#     """
+#     Caută scorul unei imagini după numele ei în fișierul CSV.
+#
+#     :param image_name: Numele imaginii pentru care se caută scorul.
+#     :param csv_file: Calea fișierului CSV care conține etichetele.
+#     :return: Scorul imaginii dacă este găsit, altfel None.
+#     """
+#     df = pd.read_csv(csv_file)
+#     row_search = df[df['image_name'] == image_name].iloc[0]
+#     return row_search['MOS']
+
+
+def load_and_process_images(directory, csv_file, image_size=(224, 224), output_file="image_label_pairs_comparison_new.txt"):
     """
     Încarcă imaginile și etichetele din setul de date KonIQ-10k.
 
@@ -22,6 +35,7 @@ def load_and_process_images(directory, csv_file, image_size=(224, 224)):
     images = []
     labels = []
 
+    # with open(output_file, "w") as f:
     for idx, row in df.iterrows():
         # Construirea căii complete a imaginii
         image_path = os.path.join(directory, row['image_name'])
@@ -33,6 +47,10 @@ def load_and_process_images(directory, csv_file, image_size=(224, 224)):
         # Adăugarea imaginii și a etichetei în listă
         images.append(img_to_array(image))
         labels.append(row['MOS'])
+
+        # Scrierea perechii imagine-etichetă și scorului real în fișier
+        # real_score = find_image_score(row['image_name'], csv_file)
+        # f.write(f"{row['image_name']} - Extracted Score: {row['MOS']}, Real Score: {real_score}\n")
 
     # Convertirea listelor în array-uri numpy
     images = np.array(images, dtype='float32')

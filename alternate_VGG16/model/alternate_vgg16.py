@@ -13,7 +13,7 @@ from repo.alternate_VGG16.utils.metrics import srocc, plcc, custom_accuracy
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 
-def build_and_train_model(train_dir, val_dir, train_labels_file, val_labels_file, batch_size, epochs):
+def build_model_architecture():
     # Definirea modelului de bază (fără straturile superioare) pre-antrenat folosind greutăți de la 'ImageNet'
     print("Construim modelul VGG16...")
     base_model = VGG16(weights='imagenet',
@@ -31,6 +31,19 @@ def build_and_train_model(train_dir, val_dir, train_labels_file, val_labels_file
     output = Dense(1, activation='linear')(x)  # Un singur neuron pentru output-ul scalar (scorul de calitate)
     vgg16_model = Model(inputs=base_model.input, outputs=output)
 
+    return vgg16_model
+
+
+def train_model(train_dir, val_dir, train_labels_file, val_labels_file, batch_size, epochs, weights):
+    vgg16_model = build_model_architecture()
+
+    # Conditional loading of weights if a path is provided and the file exists
+    if weights and os.path.exists(weights):
+        print(f"Loading weights from {weights}")
+        vgg16_model.load_weights(weights)
+    else:
+        print("Starting training from scratch.")
+
     print("Compilăm modelul...")
     vgg16_model.compile(optimizer=Adam(learning_rate=1e-4),
                         loss='mse',
@@ -38,9 +51,18 @@ def build_and_train_model(train_dir, val_dir, train_labels_file, val_labels_file
 
     vgg16_model.summary()
 
-    # Callback pentru salvarea celui mai bun model
-    checkpoint = ModelCheckpoint('../../../alternate_model_without_resized_data/best_model.h5',
-                                 monitor='val_loss', save_best_only=True)
+    # Save the best model based on validation loss
+    checkpoint_best = ModelCheckpoint(
+        '../../../alternate_model_without_resized_data/best_model.h5',
+        monitor='val_loss', save_best_only=True, verbose=1)
+
+    # Save weights every epoch
+    checkpoint_epoch = ModelCheckpoint(
+        '../../../alternate_model_without_resized_data/weights_epoch_{epoch:02d}.h5',
+        save_weights_only=True, save_freq='epoch', verbose=1)
+
+    # Include both callbacks in your model's fit method
+    callbacks_list = [checkpoint_best, checkpoint_epoch, tensorboard_callback]
 
     # Configurarea ImageDataGenerator
     train_datagen = ImageDataGenerator(rescale=1. / 255)  # Adăugare normalizare ca preprocesare
@@ -67,7 +89,7 @@ def build_and_train_model(train_dir, val_dir, train_labels_file, val_labels_file
         epochs=epochs,
         validation_data=validation_generator,
         validation_steps=validation_generator.samples // batch_size,
-        callbacks=[checkpoint, tensorboard_callback])
+        callbacks=callbacks_list)
 
     return vgg16_model
 
@@ -93,6 +115,8 @@ if __name__ == "__main__":
     # histogram_freq=1 va scrie histograma gradientilor și a ponderilor pentru fiecare epoca
     tensorboard_callback = TensorBoard(log_dir='../logs_new', histogram_freq=1)
 
+    # weights_path = '../../../alternate_model_without_resized_data/previous_weights2/weights_epoch_18.h5'
+    weights_path = ''
     train_directory = '../data/train/all_classes'
     val_directory = '../data/validation/all_classes'
     train_lb = '../data/train_labels.csv'
@@ -100,8 +124,8 @@ if __name__ == "__main__":
 
     print("Antrenăm modelul...")
     batch: int = 16
-    epoch: int = 40
-    model = build_and_train_model(train_directory, val_directory, train_lb, val_lb, batch, epoch)
+    epoch: int = 40  # left epochs
+    model = train_model(train_directory, val_directory, train_lb, val_lb, batch, epoch, weights_path)
 
     test_directory = '../data/test/all_classes'
     test_lb = '../data/test_labels.csv'

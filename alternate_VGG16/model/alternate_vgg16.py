@@ -117,18 +117,18 @@ if __name__ == "__main__":
 
     # weights_path = '../../../alternate_model_without_resized_data/previous_weights2/weights_epoch_18.h5'
     weights_path = ''
-    train_directory = '../data/train/all_classes'
-    val_directory = '../data/validation/all_classes'
-    train_lb = '../data/train_labels.csv'
-    val_lb = '../data/val_labels.csv'
+    train_directory = '../data/Koniq_10k/train/all_classes'
+    val_directory = '../data/Koniq_10k/validation/all_classes'
+    train_lb = '../data/Koniq_10k/train_labels.csv'
+    val_lb = '../data/Koniq_10k/val_labels.csv'
 
     print("Antrenăm modelul...")
     batch: int = 16
     epoch: int = 40  # left epochs
     model = train_model(train_directory, val_directory, train_lb, val_lb, batch, epoch, weights_path)
 
-    test_directory = '../data/test/all_classes'
-    test_lb = '../data/test_labels.csv'
+    test_directory = '../data/Koniq_10k/test/all_classes'
+    test_lb = '../data/Koniq_10k/test_labels.csv'
 
     print("Evaluăm modelul pe setul de testare...")
     evaluate_model(model, test_directory, test_lb, batch)

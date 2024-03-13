@@ -8,24 +8,24 @@ import csv
 from repo.analysis.scale_brisque_to_mos import transform_score
 
 # Path to the image folder
-image_folder_path = '../../VGG16/data/512x384'
+image_folder_path = '../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all'
 
 # Paths and names for the output CSV files
-output_csv_path = 'output_scores.csv'
-negative_scores_csv_path = 'negative_scores.csv'
-big_scores_csv_path = 'big_scores.csv'
-na_scores_csv_path = 'na_scores.csv'
+output_csv_path = 'output_scores_LIVE2.csv'
+negative_scores_csv_path = 'negative_scores_LIVE2.csv'
+big_scores_csv_path = 'big_scores_LIVE2.csv'
+na_scores_csv_path = 'na_scores_LIVE2.csv'
 
 # Path to the CSV file with ground truth scores
-csv_file_path = '../../VGG16/data/koniq10k_scores_and_distributions.csv'
+csv_file_path = '../../alternate_VGG16/data/LIVE2/LIVE2_MOS_scores.csv'
 df = pd.read_csv(csv_file_path)
 mos_mapping = dict(zip(df['image_name'], df['MOS']))
 
 # Directories for image categories
-valid_images_dir = 'valid_images_Koniq10k'
-negative_score_images_dir = 'negative_score_images_Koniq10k'
-big_score_images_dir = 'big_score_images_Koniq10k'
-na_score_images_dir = 'na_score_images_Koniq10k'
+valid_images_dir = 'valid_images_LIVE2'
+negative_score_images_dir = 'negative_score_images_LIVE2'
+big_score_images_dir = 'big_score_images_LIVE2'
+na_score_images_dir = 'na_score_images_LIVE2'
 os.makedirs(valid_images_dir, exist_ok=True)
 os.makedirs(negative_score_images_dir, exist_ok=True)
 os.makedirs(big_score_images_dir, exist_ok=True)

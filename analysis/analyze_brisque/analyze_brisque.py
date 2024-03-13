@@ -5,7 +5,7 @@ from repo.brisque_release_online.brisque_master.brisque.brisque_quality \
     import measure_brisque as brisque_score
 import shutil
 import csv
-from repo.analysis.scale_scores import transform_score
+from repo.analysis.scale_brisque_to_mos import transform_score
 
 # Path to the image folder
 image_folder_path = '../../VGG16/data/512x384'

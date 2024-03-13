@@ -190,22 +190,22 @@ class BRISQUE:
 
         return svmutil.libsvm.svm_predict_probability(self.model, x, prob_estimates)
 
-    def test_performance_metrics(self, predicted_scores, ground_truth_scores):
-        """
-        Test the performance of the BRISQUE model using various metrics.
-
-        :param predicted_scores: An array of predicted quality scores by the BRISQUE model.
-        :param ground_truth_scores: An array of subjectively assessed ground truth quality scores.
-        :return: A dictionary containing the computed RMSE, and MAE.
-        """
-        # srcc_value = srcc(predicted_scores, ground_truth_scores)
-        # plcc_value = plcc(predicted_scores, ground_truth_scores)
-        rmse_value = rmse(predicted_scores, ground_truth_scores)
-        mae_value = mae(predicted_scores, ground_truth_scores)
-
-        return {
-            # 'SRCC': srcc_value,
-            # 'PLCC': plcc_value,
-            'RMSE': rmse_value,
-            'MAE': mae_value
-        }
+    # def test_performance_metrics(self, predicted_scores, ground_truth_scores):
+    #     """
+    #     Test the performance of the BRISQUE model using various metrics.
+    #
+    #     :param predicted_scores: An array of predicted quality scores by the BRISQUE model.
+    #     :param ground_truth_scores: An array of subjectively assessed ground truth quality scores.
+    #     :return: A dictionary containing the computed RMSE, and MAE.
+    #     """
+    #     # srcc_value = srcc(predicted_scores, ground_truth_scores)
+    #     # plcc_value = plcc(predicted_scores, ground_truth_scores)
+    #     rmse_value = rmse(predicted_scores, ground_truth_scores)
+    #     mae_value = mae(predicted_scores, ground_truth_scores)
+    #
+    #     return {
+    #         # 'SRCC': srcc_value,
+    #         # 'PLCC': plcc_value,
+    #         'RMSE': rmse_value,
+    #         'MAE': mae_value
+    #     }

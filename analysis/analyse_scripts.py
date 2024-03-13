@@ -25,7 +25,6 @@ def calculate_metrics(predicted_scores, ground_truth_scores):
 def main():
     csv_file_path = '..\\VGG16\\data\\koniq10k_scores_and_distributions.csv'
     df = pd.read_csv(csv_file_path)
-    # mos_zscore_mapping = dict(zip(df['image_name'], df['MOS_zscore']))
     mos_mapping = dict(zip(df['image_name'], df['MOS']))
 
     # Define the folder containing the images
@@ -34,7 +33,6 @@ def main():
 
     # File to store the results
     output_file_path = 'complete_image_quality_analysis.txt'
-    # header = "Image Name, BRISQUE Score, IL-NIQE Score, NIQE Score, VGG16 Score, GROUND TRUTH (MOS Z-Score) \n"
     header = "Image Name, BRISQUE Score, NIQE Score, GROUND TRUTH (MOS) \n"
 
     # Iterate over each image in the folder
@@ -58,7 +56,6 @@ def main():
                     niqe_quality = niqe_score(image_path)
                     # vgg16_quality = vgg16_score(image_path)
 
-                    # mos_zscore = mos_zscore_mapping.get(image_name, 'N/A')
                     mos_score = mos_mapping.get(image_name, np.nan)
 
                     # Print progress

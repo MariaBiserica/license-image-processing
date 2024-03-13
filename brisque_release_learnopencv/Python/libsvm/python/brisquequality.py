@@ -194,7 +194,7 @@ def measure_brisque(img_path):
 
 
 def main():
-    image_path = "..\\..\\..\\..\\VGG16\\data\\512x384\\826373.jpg"
+    image_path = "..\\..\\..\\..\\VGG16\\data\\512x384\\1026198859.jpg"
     quality_score = measure_brisque(image_path)
     print(f'BRISQUE learnOpenCv Quality Score: {quality_score:.4f}')
 

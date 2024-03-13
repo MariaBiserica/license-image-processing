@@ -51,17 +51,17 @@ def evaluate_performance(brisque_instance, image_path, ground_truth_scores_dict)
         raise ValueError(f"No ground truth score found for image {image_name}")
 
     # Use the BRISQUE instance to evaluate the performance
-    performance_metrics = brisque_instance.test_performance_metrics(np.array([predicted_score]),
-                                                                    np.array([ground_truth_score]))
+    # performance_metrics = brisque_instance.test_performance_metrics(np.array([predicted_score]),
+    #                                                                 np.array([ground_truth_score]))
 
-    return performance_metrics
+    # return performance_metrics
 
 
 def main():
     csv_path = "..\\..\\..\\VGG16\\data\\koniq10k_scores_and_distributions.csv"
     ground_truth_scores_dict = get_ground_truth_scores(csv_path)
 
-    image_path = "..\\..\\..\\VGG16\\data\\512x384\\826373.jpg"
+    image_path = "..\\..\\..\\VGG16\\data\\512x384\\10155925686.jpg"
     image_name = os.path.basename(image_path)  # Extract the filename
 
     # Get the ground truth score for the given image
@@ -76,10 +76,10 @@ def main():
     print(f'Ground Truth Score: {ground_truth_score}')
 
     # Evaluate the performance for a single image path
-    performance_results = evaluate_performance(brisque_obj, image_path, ground_truth_scores_dict)
-    print("Performance Metrics:")
-    for metric, value in performance_results.items():
-        print(f'{metric}: {value:.4f}')
+    # performance_results = evaluate_performance(brisque_obj, image_path, ground_truth_scores_dict)
+    # print("Performance Metrics:")
+    # for metric, value in performance_results.items():
+    #     print(f'{metric}: {value:.4f}')
 
 
 if __name__ == "__main__":

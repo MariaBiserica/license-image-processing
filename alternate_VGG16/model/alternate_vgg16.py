@@ -21,8 +21,8 @@ def build_model_architecture():
                        input_shape=(512, 384, 3))
 
     # Congelarea straturilor din modelul de bază pentru a păstra proprietățile modelului mai complex
-    for layer in base_model.layers:
-        layer.trainable = False
+    # for layer in base_model.layers:
+    #     layer.trainable = False
 
     # Adăugarea de noi straturi Dense pentru regresie
     x = Flatten()(base_model.output)  # Strat aplatizare output 3D al rețelei într-un vector 1D

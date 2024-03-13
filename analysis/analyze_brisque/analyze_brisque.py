@@ -22,10 +22,10 @@ df = pd.read_csv(csv_file_path)
 mos_mapping = dict(zip(df['image_name'], df['MOS']))
 
 # Directories for image categories
-valid_images_dir = 'valid_images'
-negative_score_images_dir = 'negative_score_images'
-big_score_images_dir = 'big_score_images'
-na_score_images_dir = 'na_score_images'
+valid_images_dir = 'valid_images_Koniq10k'
+negative_score_images_dir = 'negative_score_images_Koniq10k'
+big_score_images_dir = 'big_score_images_Koniq10k'
+na_score_images_dir = 'na_score_images_Koniq10k'
 os.makedirs(valid_images_dir, exist_ok=True)
 os.makedirs(negative_score_images_dir, exist_ok=True)
 os.makedirs(big_score_images_dir, exist_ok=True)

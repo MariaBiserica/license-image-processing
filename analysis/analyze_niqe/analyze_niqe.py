@@ -3,10 +3,10 @@ import csv
 from repo.niqe_release_online.niqe import measure_niqe as niqe_score
 
 # Path to the image folder - we will use only the images with a valid brisque score
-image_folder_path = '../analyze_brisque/valid_images_Koniq10k'
+image_folder_path = '../analyze_brisque/valid_images_LIVE2'
 
 # Path and name for the output CSV file
-output_csv_path = 'niqe_scores_Koniq10k.csv'
+output_csv_path = 'niqe_scores_LIVE2.csv'
 
 # Get all image filenames in the folder
 image_filenames = [f for f in os.listdir(image_folder_path) if f.endswith(('.png', '.jpg', '.jpeg', '.bmp'))]

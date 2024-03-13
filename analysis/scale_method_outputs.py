@@ -40,8 +40,8 @@ def process_scores(csv_path, output_csv_path):
 
 
 # Example usage
-csv_path = 'analyze_niqe/niqe_scores_Koniq10k.csv'
-output_csv_path = 'analyze_niqe/output_scores_Koniq10k.csv'
+csv_path = 'analyze_niqe/niqe_scores_LIVE2.csv'
+output_csv_path = 'analyze_niqe/output_scores_LIVE2.csv'
 
 # Plotting the distribution of the original NIQE scores
 df = pd.read_csv(csv_path)

@@ -60,12 +60,15 @@ with open(output_csv_path, 'w', newline='') as output_csvfile, \
             score = brisque_score(full_path)
             brisque_scores.append(score)
             ground_truth = mos_mapping.get(filename, 'N/A')
-
             transformed_mos = transform_score(score) if ground_truth != 'N/A' else 'N/A'
-            output_writer.writerow({'image_name': filename, 'brisque_score': score, 'ground_truth': ground_truth,
-                                    'transformed_mos': transformed_mos})
 
-            if score < 0:
+            # Check if BRISQUE score is within the desired range before writing to output_scores_LIVE2.csv
+            if 0 <= score <= 100 and ground_truth != 'N/A':
+                output_writer.writerow({'image_name': filename, 'brisque_score': score, 'ground_truth': ground_truth,
+                                        'transformed_mos': transformed_mos})
+                shutil.copy(full_path, os.path.join(valid_images_dir, filename))
+                scores_count['[0-100]'] += 1
+            elif score < 0:
                 negative_writer.writerow({'image_name': filename, 'brisque_score': score})
                 shutil.copy(full_path, os.path.join(negative_score_images_dir, filename))
                 scores_count['<0'] += 1
@@ -77,9 +80,6 @@ with open(output_csv_path, 'w', newline='') as output_csvfile, \
                 na_writer.writerow({'image_name': filename, 'brisque_score': score})
                 shutil.copy(full_path, os.path.join(na_score_images_dir, filename))
                 scores_count['N/A'] += 1
-            else:
-                shutil.copy(full_path, os.path.join(valid_images_dir, filename))
-                scores_count['[0-100]'] += 1
 
 # Create and display the distribution graph of BRISQUE scores
 plt.hist(brisque_scores, bins=20, color='blue', edgecolor='black')

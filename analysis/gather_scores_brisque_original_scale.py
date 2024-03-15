@@ -12,12 +12,11 @@ def prepare_and_combine_data(brisque_csv_path, niqe_csv_path, gt_csv_path, outpu
     gt_df = pd.read_csv(gt_csv_path)
 
     # Rename columns as per the new requirement
-    brisque_df.rename(columns={'brisque_score': 'brisque', 'MOS_zscore_transformed_to_brisque_scale': 'MOS_zscore_transformed_to_brisque_scale'}, inplace=True)
+    brisque_df.rename(columns={'brisque_score': 'brisque', 'DMOS_score': 'DMOS'}, inplace=True)
     niqe_df.rename(columns={'translated_brisque_score': 'niqe_transformed_to_brisque_scale'}, inplace=True)
-    gt_df.rename(columns={'MOS': 'MOS_zscore_transformed_to_brisque_scale'}, inplace=True)
 
     # Merge BRISQUE and NIQE data based on the image name with an 'inner' join
-    combined_df = pd.merge(brisque_df[['image_name', 'brisque', 'MOS_zscore_transformed_to_brisque_scale']],
+    combined_df = pd.merge(brisque_df[['image_name', 'brisque', 'DMOS']],
                            niqe_df[['image_name', 'niqe_transformed_to_brisque_scale']],
                            on='image_name',
                            how='inner')
@@ -25,7 +24,7 @@ def prepare_and_combine_data(brisque_csv_path, niqe_csv_path, gt_csv_path, outpu
     # Round the scores to four decimal places
     combined_df['brisque'] = combined_df['brisque'].round(4)
     combined_df['niqe_transformed_to_brisque_scale'] = combined_df['niqe_transformed_to_brisque_scale'].round(4)
-    combined_df['MOS_zscore_transformed_to_brisque_scale'] = combined_df['MOS_zscore_transformed_to_brisque_scale'].round(4)
+    combined_df['DMOS'] = combined_df['DMOS'].round(4)
 
     # Saving the combined data into a new CSV file
     combined_df.to_csv(output_csv_path, index=False)
@@ -37,15 +36,15 @@ def prepare_and_combine_data(brisque_csv_path, niqe_csv_path, gt_csv_path, outpu
 
 def plot_correlations(df):
     # Update column names
-    brisque_corr = df[['brisque', 'MOS_zscore_transformed_to_brisque_scale']].corr(method='pearson').iloc[0, 1]
-    niqe_corr = df[['niqe_transformed_to_brisque_scale', 'MOS_zscore_transformed_to_brisque_scale']].corr(method='pearson').iloc[0, 1]
+    brisque_corr = df[['brisque', 'DMOS']].corr(method='pearson').iloc[0, 1]
+    niqe_corr = df[['niqe_transformed_to_brisque_scale', 'DMOS']].corr(method='pearson').iloc[0, 1]
 
     correlations = [brisque_corr, niqe_corr]
     methods = ['BRISQUE', 'NIQE Transformed to BRISQUE Scale']
 
     plt.figure(figsize=(8, 6))
     sns.barplot(x=methods, y=correlations, palette='coolwarm')
-    plt.title('Pearson Correlation to MOS (Z-Score Transformed to BRISQUE Scale)')
+    plt.title('Pearson Correlation to DMOS')
     plt.ylabel('Pearson Correlation Coefficient')
     plt.xlabel('Method')
     plt.ylim(0, 1)
@@ -57,15 +56,15 @@ def plot_correlations(df):
 def plot_regression_scatter(df):
     fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
 
-    sns.regplot(ax=axes[0], x='brisque', y='MOS_zscore_transformed_to_brisque_scale', data=df,
-                scatter_kws={'alpha':0.5}, line_kws={'color':'red'})
-    axes[0].set_title('BRISQUE vs MOS (Z-Score Transformed)')
+    sns.regplot(ax=axes[0], x='brisque', y='DMOS', data=df,
+                scatter_kws={'alpha':0.5}, line_kws={'color': 'red'})
+    axes[0].set_title('BRISQUE vs DMOS')
     axes[0].set_xlabel('BRISQUE Score')
-    axes[0].set_ylabel('MOS (Z-Score Transformed)')
+    axes[0].set_ylabel('DMOS')
 
-    sns.regplot(ax=axes[1], x='niqe_transformed_to_brisque_scale', y='MOS_zscore_transformed_to_brisque_scale', data=df,
-                scatter_kws={'alpha':0.5}, line_kws={'color':'blue'})
-    axes[1].set_title('NIQE (Transformed to BRISQUE Scale) vs MOS (Z-Score Transformed)')
+    sns.regplot(ax=axes[1], x='niqe_transformed_to_brisque_scale', y='DMOS', data=df,
+                scatter_kws={'alpha':0.5}, line_kws={'color': 'blue'})
+    axes[1].set_title('NIQE (Transformed to BRISQUE Scale) vs DMOS')
     axes[1].set_xlabel('NIQE (Transformed to BRISQUE Scale)')
 
     plt.tight_layout()
@@ -81,10 +80,10 @@ def calculate_mae(y_true, y_pred):
 
 
 def plot_error_metrics(df):
-    brisque_rmse = calculate_rmse(df['MOS_zscore_transformed_to_brisque_scale'], df['brisque'])
-    niqe_rmse = calculate_rmse(df['MOS_zscore_transformed_to_brisque_scale'], df['niqe_transformed_to_brisque_scale'])
-    brisque_mae = calculate_mae(df['MOS_zscore_transformed_to_brisque_scale'], df['brisque'])
-    niqe_mae = calculate_mae(df['MOS_zscore_transformed_to_brisque_scale'], df['niqe_transformed_to_brisque_scale'])
+    brisque_rmse = calculate_rmse(df['DMOS'], df['brisque'])
+    niqe_rmse = calculate_rmse(df['DMOS'], df['niqe_transformed_to_brisque_scale'])
+    brisque_mae = calculate_mae(df['DMOS'], df['brisque'])
+    niqe_mae = calculate_mae(df['DMOS'], df['niqe_transformed_to_brisque_scale'])
 
     rmses = [brisque_rmse, niqe_rmse]
     maes = [brisque_mae, niqe_mae]
@@ -109,10 +108,10 @@ def plot_error_metrics(df):
 
 
 def main():
-    brisque_csv_path = 'analyze_brisque/output_scores_Koniq10k_brisque_original_scale.csv'
-    niqe_csv_path = 'analyze_niqe/output_scores_Koniq10k.csv'
-    gt_csv_path = '../VGG16/data/koniq10k_scores_and_distributions.csv'
-    output_csv_path = 'brisque_niqe_mos_scores_Koniq10k_original_scale.csv'
+    brisque_csv_path = 'analyze_brisque/output_scores_LIVE2_original_scale.csv'
+    niqe_csv_path = 'analyze_niqe/output_scores_LIVE2.csv'
+    gt_csv_path = '../alternate_VGG16/data/LIVE2/LIVE2_DMOS_scores.csv'
+    output_csv_path = 'brisque_niqe_scores_LIVE2_original_scale.csv'
 
     combined_df = prepare_and_combine_data(brisque_csv_path, niqe_csv_path, gt_csv_path, output_csv_path)
     plot_correlations(combined_df)

@@ -159,10 +159,10 @@ def plot_error_metrics(df):
 
 def main():
     # Paths to the existing CSV files
-    brisque_csv_path = 'analyze_brisque/output_scores_LIVE2.csv'
-    niqe_csv_path = 'analyze_niqe/output_scores_LIVE2.csv'
-    gt_csv_path = '../alternate_VGG16/data/LIVE2/LIVE2_MOS_scores.csv'
-    output_csv_path = 'brisque_niqe_mos_scores_LIVE2.csv'
+    brisque_csv_path = 'analyze_brisque/output_scores_Koniq10k_brisque_original_scale.csv'
+    niqe_csv_path = 'analyze_niqe/output_scores_Koniq10k.csv'
+    gt_csv_path = '../VGG16/data/koniq10k_scores_and_distributions.csv'
+    output_csv_path = 'brisque_niqe_mos_scores_Koniq10k_original_scale.csv'
 
     # Process and combine the data
     combined_df = prepare_and_combine_data(brisque_csv_path, niqe_csv_path, gt_csv_path, output_csv_path)

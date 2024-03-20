@@ -14,6 +14,10 @@ def r_squared(y_true, y_pred):
     return 1 - SS_res / (SS_tot + K.epsilon())
 
 
+def rmse(y_true, y_pred):
+    return K.sqrt(K.mean(K.square(y_pred - y_true), axis=-1))
+
+
 def srocc(y_true, y_pred):
     def compute_srocc(y_true, y_pred):
         srocc_value, _ = spearmanr(y_true, y_pred)

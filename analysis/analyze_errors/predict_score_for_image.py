@@ -1,6 +1,7 @@
 import tensorflow as tf
 from keras_preprocessing import image
 
+
 def predict_score_for_image(model, image_path):
     img = image.load_img(image_path, target_size=(512, 384))
 

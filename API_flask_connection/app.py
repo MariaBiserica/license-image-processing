@@ -5,6 +5,7 @@ import cv2
 from repo.assessment_features.noise_assessment.noise_level_assessment import (load_elm_model,
                                                                               calculate_scaled_noise_score)
 from repo.assessment_features.contrast_assessment.contrast_level_assessment import calculate_scaled_contrast_score
+from repo.assessment_features.brightness_assessment.brightness_level_assessment import calculate_scaled_brightness_score
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Path to the CSV file with contrast scores for scaling
 NOISE_CSV_PATH = '../assessment_features/noise_assessment/Koniq10k_noise_scores.csv'
 CONTRAST_CSV_PATH = '../assessment_features/contrast_assessment/Koniq10k_contrast_scores.csv'
+BRIGHTNESS_CSV_PATH = '../assessment_features/brightness_assessment/Koniq10k_brightness_scores.csv'
 
 # Load your model (adjust 'elm_model.joblib' as needed)
 elm_model = load_elm_model('../assessment_features/noise_assessment/elm_model.joblib')
@@ -34,6 +36,7 @@ def predict_quality():
     image = cv2.imread(file_path)
     noise_score = calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH)
     contrast_score = calculate_scaled_contrast_score(file_path, CONTRAST_CSV_PATH)
+    brightness_score = calculate_scaled_brightness_score(file_path, BRIGHTNESS_CSV_PATH)
 
     # Clean up the uploaded image after processing
     os.remove(file_path)
@@ -41,7 +44,8 @@ def predict_quality():
     # Return the quality score along with contrast scores
     return jsonify({
         'noise_score': noise_score,
-        'contrast_score': contrast_score
+        'contrast_score': contrast_score,
+        'brightness_score': brightness_score,
     })
 
 

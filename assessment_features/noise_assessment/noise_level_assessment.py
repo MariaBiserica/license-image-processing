@@ -50,8 +50,8 @@ def load_elm_model(load_path='elm_model.joblib'):
     return elm_model
 
 
-def predict_image_quality(elm_model, image):
-    print("Predicting quality score for the new image...")
+def calculate_noise_score(elm_model, image):
+    print("Predicting quality score based on noise for the new image...")
     variance = calculate_variance(image)
     ps_entropy = calculate_power_spectral_entropy(image)
     wavelet_std_dev = calculate_wavelet_std_dev(image)
@@ -79,8 +79,8 @@ def main():
 
     image_path = '../../VGG16/data/512x384/2017266.jpg'
     image = cv2.imread(image_path)
-    quality_score = predict_image_quality(elm_model, image)
-    print(f"Predicted Quality Score: {quality_score[0]}")
+    quality_score = calculate_noise_score(elm_model, image)
+    print(f"Noise Quality Score: {quality_score[0]}")
 
 
 if __name__ == "__main__":

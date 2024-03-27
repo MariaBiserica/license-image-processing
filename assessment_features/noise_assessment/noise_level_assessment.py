@@ -100,7 +100,8 @@ def gather_scores_on_dataset(image_folder_path, output_csv_path, model):
 
 
 def main():
-    dataset_dir = '../../VGG16/data/512x384'
+    # dataset_dir = '../../VGG16/data/512x384'
+    dataset_dir = '../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all'
     model_path = 'elm_model.joblib'
     if os.path.exists(model_path):
         elm_model = load_elm_model(model_path)
@@ -114,15 +115,15 @@ def main():
         x_train, y_train = extract_features_for_dataset(df, dataset_dir)
         elm_model = train_elm_model(x_train, y_train, save_path=model_path)
 
-    # output_csv_path = 'Koniq10k_noise_scores.csv'
-    # scaled_output_csv_path = 'Scaled_Koniq10k_noise_scores.csv'
-    # gather_scores_on_dataset(dataset_dir, output_csv_path, elm_model)
-    # scale_scores_in_csv(output_csv_path, scaled_output_csv_path)
+    output_csv_path = 'LIVE2_noise_scores.csv'
+    scaled_output_csv_path = 'Scaled_LIVE2_noise_scores.csv'
+    gather_scores_on_dataset(dataset_dir, output_csv_path, elm_model)
+    scale_scores_in_csv(output_csv_path, scaled_output_csv_path)
 
-    image_path = '../../VGG16/data/512x384/826373.jpg'
-    scores_csv_path = 'Koniq10k_noise_scores.csv'
-    image = cv2.imread(image_path)
-    calculate_scaled_noise_score(elm_model, image, scores_csv_path)
+    # image_path = '../../VGG16/data/512x384/826373.jpg'
+    # scores_csv_path = 'Koniq10k_noise_scores.csv'
+    # image = cv2.imread(image_path)
+    # calculate_scaled_noise_score(elm_model, image, scores_csv_path)
 
 
 if __name__ == "__main__":

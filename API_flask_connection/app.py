@@ -7,6 +7,7 @@ from repo.assessment_features.noise_assessment.noise_level_assessment import (lo
 from repo.assessment_features.contrast_assessment.contrast_level_assessment import calculate_scaled_contrast_score
 from repo.assessment_features.brightness_assessment.brightness_level_assessment import calculate_scaled_brightness_score
 from repo.assessment_features.sharpness_assessment.sharpness_level_assessment import calculate_scaled_sharpness_score
+from repo.assessment_features.chromatic_assessment.chromatic_level_assessment import calculate_scaled_chromatic_score
 
 app = Flask(__name__)
 
@@ -19,6 +20,8 @@ NOISE_CSV_PATH = '../assessment_features/noise_assessment/Koniq10k_noise_scores.
 CONTRAST_CSV_PATH = '../assessment_features/contrast_assessment/Koniq10k_contrast_scores.csv'
 BRIGHTNESS_CSV_PATH = '../assessment_features/brightness_assessment/Koniq10k_brightness_scores.csv'
 SHARPNESS_CSV_PATH = '../assessment_features/sharpness_assessment/Koniq10k_sharpness_scores.csv'
+CHROMATIC_CSV_PATH = '../assessment_features/chromatic_assessment/Koniq10k_chromatic_scores.csv'
+SVR_MODEL_PATH = '../assessment_features/chromatic_assessment/svr_model.joblib'
 
 # Load your model (adjust 'elm_model.joblib' as needed)
 elm_model = load_elm_model('../assessment_features/noise_assessment/elm_model.joblib')
@@ -40,6 +43,7 @@ def predict_quality():
     contrast_score = calculate_scaled_contrast_score(file_path, CONTRAST_CSV_PATH)
     brightness_score = calculate_scaled_brightness_score(file_path, BRIGHTNESS_CSV_PATH)
     sharpness_score = calculate_scaled_sharpness_score(file_path, SHARPNESS_CSV_PATH)
+    chromatic_score = calculate_scaled_chromatic_score(file_path, CHROMATIC_CSV_PATH, SVR_MODEL_PATH)
 
     # Clean up the uploaded image after processing
     os.remove(file_path)
@@ -50,6 +54,7 @@ def predict_quality():
         'contrast_score': contrast_score,
         'brightness_score': brightness_score,
         'sharpness_score': sharpness_score,
+        'chromatic_score': chromatic_score,
     })
 
 

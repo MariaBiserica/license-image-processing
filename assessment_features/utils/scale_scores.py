@@ -11,8 +11,8 @@ def scale_scores_in_csv(csv_path, output_path):
     # Load the CSV file
     df = pd.read_csv(csv_path)
 
-    # Extract the 'Cimage' scores
-    scores = df['Sharpness_Score']
+    # Extract the scores
+    scores = df['Chromatic_Score']
 
     # Find the minimum and maximum score for scaling
     min_score, max_score = scores.min(), scores.max()
@@ -21,7 +21,7 @@ def scale_scores_in_csv(csv_path, output_path):
     new_min, new_max = 1, 5
 
     # Scale the scores
-    df['Sharpness_Score_to_MOS_scale'] = new_min + (new_max - new_min) * (scores - min_score) / (max_score - min_score)
+    df['Chromatic_Score_to_MOS_scale'] = new_min + (new_max - new_min) * (scores - min_score) / (max_score - min_score)
 
     # Save the new DataFrame to a CSV
     df.to_csv(output_path, index=False)

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, json
 from werkzeug.utils import secure_filename
 import os
 import cv2
@@ -33,29 +33,42 @@ def predict_quality():
 
     if 'image' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
+
+    if 'metrics' not in request.form:
+        return jsonify({'error': 'Missing metrics'}), 400
+
+    # Process file
     file = request.files['image']
     filename = secure_filename(file.filename)
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(file_path)
 
+    # Read selected metrics
+    selected_metrics = set(json.loads(request.form['metrics']))
+
+    # Load image
     image = cv2.imread(file_path)
-    noise_score = calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH)
-    contrast_score = calculate_scaled_contrast_score(file_path, CONTRAST_CSV_PATH)
-    brightness_score = calculate_scaled_brightness_score(file_path, BRIGHTNESS_CSV_PATH)
-    sharpness_score = calculate_scaled_sharpness_score(file_path, SHARPNESS_CSV_PATH)
-    chromatic_score = calculate_scaled_chromatic_score(file_path, CHROMATIC_CSV_PATH, SVR_MODEL_PATH)
+
+    # Initialize results dictionary
+    results = {}
+
+    # Conditionally calculate scores
+    if 'Noise' in selected_metrics:
+        results['noise_score'] = calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH)
+    if 'Contrast' in selected_metrics:
+        results['contrast_score'] = calculate_scaled_contrast_score(file_path, CONTRAST_CSV_PATH)
+    if 'Brightness' in selected_metrics:
+        results['brightness_score'] = calculate_scaled_brightness_score(file_path, BRIGHTNESS_CSV_PATH)
+    if 'Sharpness' in selected_metrics:
+        results['sharpness_score'] = calculate_scaled_sharpness_score(file_path, SHARPNESS_CSV_PATH)
+    if 'Chromatic Quality' in selected_metrics:
+        results['chromatic_score'] = calculate_scaled_chromatic_score(file_path, CHROMATIC_CSV_PATH, SVR_MODEL_PATH)
 
     # Clean up the uploaded image after processing
     os.remove(file_path)
 
-    # Return the quality score along with contrast scores
-    return jsonify({
-        'noise_score': noise_score,
-        'contrast_score': contrast_score,
-        'brightness_score': brightness_score,
-        'sharpness_score': sharpness_score,
-        'chromatic_score': chromatic_score,
-    })
+    # Return the calculated scores
+    return jsonify(results)
 
 
 if __name__ == '__main__':

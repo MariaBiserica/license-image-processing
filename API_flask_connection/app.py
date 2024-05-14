@@ -8,6 +8,7 @@ from repo.assessment_features.contrast_assessment.contrast_level_assessment impo
 from repo.assessment_features.brightness_assessment.brightness_level_assessment import calculate_scaled_brightness_score
 from repo.assessment_features.sharpness_assessment.sharpness_level_assessment import calculate_scaled_sharpness_score
 from repo.assessment_features.chromatic_assessment.chromatic_level_assessment import calculate_scaled_chromatic_score
+from repo.brisque_release_online.brisque_master.brisque.brisque_quality import calculate_scaled_brisque_score
 
 app = Flask(__name__)
 
@@ -63,6 +64,8 @@ def predict_quality():
         results['sharpness_score'] = calculate_scaled_sharpness_score(file_path, SHARPNESS_CSV_PATH)
     if 'Chromatic Quality' in selected_metrics:
         results['chromatic_score'] = calculate_scaled_chromatic_score(file_path, CHROMATIC_CSV_PATH, SVR_MODEL_PATH)
+    if 'BRISQUE' in selected_metrics:
+        results['brisque_score'] = calculate_scaled_brisque_score(file_path)
 
     # Clean up the uploaded image after processing
     os.remove(file_path)

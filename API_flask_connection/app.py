@@ -69,7 +69,9 @@ def predict_quality():
     if 'BRISQUE' in selected_metrics:
         results['brisque_score'] = f"{calculate_scaled_brisque_score(file_path):.4f}"
     if 'ILNIQE' in selected_metrics:
-        results['ilniqe_score'] = f"{calculate_scaled_ilniqe_score(file_path, ILNIQE_SCORES_CSV_PATH):.4f}"
+        ilniqe_score, ilniqe_time = calculate_scaled_ilniqe_score(file_path, ILNIQE_SCORES_CSV_PATH)
+        results['ilniqe_score'] = f"{ilniqe_score:.4f}"
+        results['ilniqe_time'] = ilniqe_time
 
     # Clean up the uploaded image after processing
     os.remove(file_path)

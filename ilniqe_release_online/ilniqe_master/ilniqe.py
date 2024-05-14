@@ -464,6 +464,9 @@ def calculate_scaled_ilniqe_score(img_path, csv_path):
     :param csv_path: Path to the CSV file containing 'ilniqe_score' data.
     :return: A MOS score ranging from 1 (bad) to 5 (excellent).
     """
+    # Start timer
+    start_time = time.time()
+
     # Get the IL-NIQE score
     ilniqe_score = measure_ilniqe(img_path)
 
@@ -480,8 +483,12 @@ def calculate_scaled_ilniqe_score(img_path, csv_path):
 
     # Linearly scale the IL-NIQE score to MOS
     # Transform IL-NIQE from [min_score, max_score] to [1, 5]
-    mos_score = 1 + 4 * (max_score - ilniqe_score) / (max_score - min_score)
-    return mos_score
+    ilniqe_scaled_score = 1 + 4 * (max_score - ilniqe_score) / (max_score - min_score)
+
+    end_time = time.time()  # End timer
+    elapsed_time = end_time - start_time  # Compute duration
+
+    return ilniqe_scaled_score, f"{elapsed_time:.4f} seconds"  # Return score and time taken
 
 
 def main():

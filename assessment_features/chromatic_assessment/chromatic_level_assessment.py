@@ -1,4 +1,6 @@
 import os
+import time
+
 import cv2
 import csv
 import numpy as np
@@ -162,6 +164,8 @@ def calculate_scaled_chromatic_score(image_path, csv_path, svr_model_path):
     :param csv_path: Path to the CSV file with contrast scores.
     :return: Scaled contrast score for the image.
     """
+    start_time = time.time()  # Start timer
+
     # Calculate the contrast scores for the image
     overall_chromatic = calculate_chromatic_score(image_path, svr_model_path)
 
@@ -173,10 +177,13 @@ def calculate_scaled_chromatic_score(image_path, csv_path, svr_model_path):
     new_min, new_max = 1, 5
 
     # Scale the overall contrast score
-    scaled_score = new_min + (new_max - new_min) * (overall_chromatic - min_score) / (max_score - min_score)
-    print(f"Scaled Image Chromatic Score: {scaled_score}")
+    scaled_chromatic_score = new_min + (new_max - new_min) * (overall_chromatic - min_score) / (max_score - min_score)
+    print(f"Scaled Image Chromatic Score: {scaled_chromatic_score}")
 
-    return scaled_score
+    end_time = time.time()  # End timer
+    elapsed_time = end_time - start_time  # Compute duration
+
+    return scaled_chromatic_score, f"{elapsed_time:.4f} s"  # Return score and time taken
 
 
 def gather_scores_on_dataset(image_folder_path, output_csv_path, svr_model_path):

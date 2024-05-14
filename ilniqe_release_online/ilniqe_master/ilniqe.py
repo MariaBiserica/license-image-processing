@@ -488,7 +488,7 @@ def calculate_scaled_ilniqe_score(img_path, csv_path):
     end_time = time.time()  # End timer
     elapsed_time = end_time - start_time  # Compute duration
 
-    return ilniqe_scaled_score, f"{elapsed_time:.4f} seconds"  # Return score and time taken
+    return ilniqe_scaled_score, f"{elapsed_time:.4f} s"  # Return score and time taken
 
 
 def main():

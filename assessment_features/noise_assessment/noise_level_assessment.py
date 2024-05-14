@@ -1,4 +1,6 @@
 import os
+import time
+
 import cv2
 import csv
 import numpy as np
@@ -64,6 +66,8 @@ def calculate_noise_score(elm_model, image):
 
 
 def calculate_scaled_noise_score(elm_model, image, csv_path):
+    start_time = time.time()  # Start timer
+
     # Calculate the contrast scores for the image
     overall_noise = calculate_noise_score(elm_model, image)
     print(f"Image Noise Score: {overall_noise[0]}")
@@ -76,10 +80,13 @@ def calculate_scaled_noise_score(elm_model, image, csv_path):
     new_min, new_max = 1, 5
 
     # Scale the overall contrast score
-    scaled_score = new_min + (new_max - new_min) * (overall_noise[0] - min_score) / (max_score - min_score)
-    print(f"Scaled Image Noise Score: {scaled_score}")
+    scaled_noise_score = new_min + (new_max - new_min) * (overall_noise[0] - min_score) / (max_score - min_score)
+    print(f"Scaled Image Noise Score: {scaled_noise_score}")
 
-    return scaled_score
+    end_time = time.time()  # End timer
+    elapsed_time = end_time - start_time  # Compute duration
+
+    return scaled_noise_score, f"{elapsed_time:.4f} s"  # Return score and time taken
 
 
 def gather_scores_on_dataset(image_folder_path, output_csv_path, model):

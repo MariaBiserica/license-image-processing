@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 import pandas as pd
@@ -39,6 +41,8 @@ def measure_brisque(img_path):
 
 
 def calculate_scaled_brisque_score(img_path):
+    start_time = time.time()  # Start timer
+
     # Load the image using OpenCV
     img = cv2.imread(img_path, cv2.IMREAD_COLOR)
 
@@ -60,7 +64,10 @@ def calculate_scaled_brisque_score(img_path):
     # BRISQUE 100 (worst) -> MOS 1 (bad)
     scaled_quality_score = 5 - 4 * (quality_score / 100)
 
-    return scaled_quality_score
+    end_time = time.time()  # End timer
+    elapsed_time = end_time - start_time  # Compute duration
+
+    return scaled_quality_score, f"{elapsed_time:.4f} s"  # Return score and time taken
 
 
 def brisque_to_mos(brisque_score):

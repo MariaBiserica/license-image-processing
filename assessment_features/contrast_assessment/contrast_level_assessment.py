@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import csv
 import os
-
+import time
 import pandas as pd
 from repo.assessment_features.utils.scale_scores import scale_scores_in_csv
 
@@ -181,6 +181,8 @@ def calculate_scaled_contrast_score(image_path, csv_path):
     :param csv_path: Path to the CSV file with contrast scores.
     :return: Scaled contrast score for the image.
     """
+    start_time = time.time()  # Start timer
+
     # Calculate the contrast scores for the image
     overall_contrast = calculate_contrast_score(image_path)
 
@@ -192,10 +194,13 @@ def calculate_scaled_contrast_score(image_path, csv_path):
     new_min, new_max = 1, 5
 
     # Scale the overall contrast score
-    scaled_score = new_min + (new_max - new_min) * (overall_contrast - min_score) / (max_score - min_score)
-    print(f"Scaled Image Contrast Score: {scaled_score}")
+    scaled_contrast_score = new_min + (new_max - new_min) * (overall_contrast - min_score) / (max_score - min_score)
+    print(f"Scaled Image Contrast Score: {scaled_contrast_score}")
 
-    return scaled_score
+    end_time = time.time()  # End timer
+    elapsed_time = end_time - start_time  # Compute duration
+
+    return scaled_contrast_score, f"{elapsed_time:.4f} s"  # Return score and time taken
 
 
 def gather_scores_on_dataset(image_folder_path, output_csv_path):

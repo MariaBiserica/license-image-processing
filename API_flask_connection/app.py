@@ -11,6 +11,7 @@ from repo.assessment_features.chromatic_assessment.chromatic_level_assessment im
 from repo.brisque_release_online.brisque_master.brisque.brisque_quality import calculate_scaled_brisque_score
 from repo.niqe_release_online.niqe import calculate_scaled_niqe_score
 from repo.ilniqe_release_online.ilniqe_master.ilniqe import calculate_scaled_ilniqe_score
+from repo.VGG16.vgg16_quality_score import measure_vgg16
 
 app = Flask(__name__)
 
@@ -90,6 +91,10 @@ def predict_quality():
         ilniqe_score, ilniqe_time = calculate_scaled_ilniqe_score(file_path, ILNIQE_SCORES_CSV_PATH)
         results['ilniqe_score'] = f"{ilniqe_score:.4f}"
         results['ilniqe_time'] = ilniqe_time
+    if 'VGG16' in selected_metrics:
+        vgg16_score, vgg16_time = measure_vgg16(file_path)
+        results['vgg16_score'] = f"{vgg16_score:.4f}"
+        results['vgg16_time'] = vgg16_time
 
     # Clean up the uploaded image after processing
     os.remove(file_path)

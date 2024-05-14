@@ -7,8 +7,9 @@ from keras.layers import Dense, Flatten, Dropout
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.preprocessing.image import ImageDataGenerator
+from keras.losses import Huber
 
-from repo.alternate_VGG16.utils.metrics import srocc, plcc, custom_accuracy
+from repo.alternate_VGG16.utils.metrics import rmse, srocc, plcc, custom_accuracy
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
@@ -46,19 +47,19 @@ def train_model(train_dir, val_dir, train_labels_file, val_labels_file, batch_si
 
     print("Compilăm modelul...")
     vgg16_model.compile(optimizer=Adam(learning_rate=1e-4),
-                        loss='mse',
-                        metrics=['mae', srocc, plcc, custom_accuracy])
+                        loss=Huber(),
+                        metrics=[custom_accuracy, srocc, plcc, rmse, 'mae'])
 
     vgg16_model.summary()
 
     # Save the best model based on validation loss
     checkpoint_best = ModelCheckpoint(
-        '../../../alternate_model_without_resized_data/best_model.h5',
+        '../../../alternate_model/best_model.h5',
         monitor='val_loss', save_best_only=True, verbose=1)
 
     # Save weights every epoch
     checkpoint_epoch = ModelCheckpoint(
-        '../../../alternate_model_without_resized_data/weights_epoch_{epoch:02d}.h5',
+        '../../../alternate_model/weights_epoch_{epoch:02d}.h5',
         save_weights_only=True, save_freq='epoch', verbose=1)
 
     # Include both callbacks in your model's fit method
@@ -115,25 +116,25 @@ if __name__ == "__main__":
     # histogram_freq=1 va scrie histograma gradientilor și a ponderilor pentru fiecare epoca
     tensorboard_callback = TensorBoard(log_dir='../logs_new', histogram_freq=1)
 
-    # weights_path = '../../../alternate_model_without_resized_data/previous_weights2/weights_epoch_18.h5'
+    # weights_path = '../../../alternate_model/previous_weights1/weights_epoch_21.h5'
     weights_path = ''
-    train_directory = '../data/Koniq_10k/train/all_classes'
-    val_directory = '../data/Koniq_10k/validation/all_classes'
-    train_lb = '../data/Koniq_10k/train_labels.csv'
-    val_lb = '../data/Koniq_10k/val_labels.csv'
+    train_directory = '../Koniq10k/train/all_classes'
+    val_directory = '../Koniq10k/validation/all_classes'
+    train_lb = '../Koniq10k/train_labels.csv'
+    val_lb = '../Koniq10k/val_labels.csv'
 
     print("Antrenăm modelul...")
     batch: int = 16
-    epoch: int = 40  # left epochs
+    epoch: int = 130  # left epochs
     model = train_model(train_directory, val_directory, train_lb, val_lb, batch, epoch, weights_path)
 
-    test_directory = '../data/Koniq_10k/test/all_classes'
-    test_lb = '../data/Koniq_10k/test_labels.csv'
+    test_directory = '../Koniq10k/test/all_classes'
+    test_lb = '../Koniq10k/test_labels.csv'
 
     print("Evaluăm modelul pe setul de testare...")
     evaluate_model(model, test_directory, test_lb, batch)
 
     # Salvează modelul pentru a fi folosit în predicţii
     print("Salvăm modelul antrenat...")
-    model.save('../../../alternate_model_without_resized_data/model_de_test.h5')
+    model.save('../../../alternate_model/model_de_test.h5')
     print("Modelul a fost salvat cu succes.")

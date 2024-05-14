@@ -9,6 +9,7 @@ from repo.assessment_features.brightness_assessment.brightness_level_assessment 
 from repo.assessment_features.sharpness_assessment.sharpness_level_assessment import calculate_scaled_sharpness_score
 from repo.assessment_features.chromatic_assessment.chromatic_level_assessment import calculate_scaled_chromatic_score
 from repo.brisque_release_online.brisque_master.brisque.brisque_quality import calculate_scaled_brisque_score
+from repo.ilniqe_release_online.ilniqe_master.ilniqe import calculate_scaled_ilniqe_score
 
 app = Flask(__name__)
 
@@ -23,6 +24,7 @@ BRIGHTNESS_CSV_PATH = '../assessment_features/brightness_assessment/Koniq10k_bri
 SHARPNESS_CSV_PATH = '../assessment_features/sharpness_assessment/Koniq10k_sharpness_scores.csv'
 CHROMATIC_CSV_PATH = '../assessment_features/chromatic_assessment/Koniq10k_chromatic_scores.csv'
 SVR_MODEL_PATH = '../assessment_features/chromatic_assessment/svr_model.joblib'
+ILNIQE_SCORES_CSV_PATH = '../analysis/analyze_ilniqe/ilniqe_scores_Koniq10k.csv'
 
 # Load your model (adjust 'elm_model.joblib' as needed)
 elm_model = load_elm_model('../assessment_features/noise_assessment/elm_model.joblib')
@@ -55,17 +57,19 @@ def predict_quality():
 
     # Conditionally calculate scores
     if 'Noise' in selected_metrics:
-        results['noise_score'] = calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH)
+        results['noise_score'] = f"{calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH):.4f}"
     if 'Contrast' in selected_metrics:
-        results['contrast_score'] = calculate_scaled_contrast_score(file_path, CONTRAST_CSV_PATH)
+        results['contrast_score'] = f"{calculate_scaled_contrast_score(file_path, CONTRAST_CSV_PATH):.4f}"
     if 'Brightness' in selected_metrics:
-        results['brightness_score'] = calculate_scaled_brightness_score(file_path, BRIGHTNESS_CSV_PATH)
+        results['brightness_score'] = f"{calculate_scaled_brightness_score(file_path, BRIGHTNESS_CSV_PATH):.4f}"
     if 'Sharpness' in selected_metrics:
-        results['sharpness_score'] = calculate_scaled_sharpness_score(file_path, SHARPNESS_CSV_PATH)
+        results['sharpness_score'] = f"{calculate_scaled_sharpness_score(file_path, SHARPNESS_CSV_PATH):.4f}"
     if 'Chromatic Quality' in selected_metrics:
-        results['chromatic_score'] = calculate_scaled_chromatic_score(file_path, CHROMATIC_CSV_PATH, SVR_MODEL_PATH)
+        results['chromatic_score'] = f"{calculate_scaled_chromatic_score(file_path, CHROMATIC_CSV_PATH, SVR_MODEL_PATH):.4f}"
     if 'BRISQUE' in selected_metrics:
-        results['brisque_score'] = calculate_scaled_brisque_score(file_path)
+        results['brisque_score'] = f"{calculate_scaled_brisque_score(file_path):.4f}"
+    if 'ILNIQE' in selected_metrics:
+        results['ilniqe_score'] = f"{calculate_scaled_ilniqe_score(file_path, ILNIQE_SCORES_CSV_PATH):.4f}"
 
     # Clean up the uploaded image after processing
     os.remove(file_path)

@@ -1,6 +1,7 @@
 import cv2
 import math
 import numpy as np
+import pandas as pd
 import os
 from scipy.ndimage.filters import convolve
 from scipy.signal import convolve2d
@@ -453,6 +454,34 @@ def measure_ilniqe(img_path):
     quality_score = calculate_ilniqe(img, 0, input_order='HWC', resize=True, version='python')
 
     return quality_score
+
+
+def calculate_scaled_ilniqe_score(img_path, csv_path):
+    """
+    Scale an IL-NIQE score to a MOS range from 1 to 5.
+
+    :param ilniqe_score: The IL-NIQE score to convert.
+    :param csv_path: Path to the CSV file containing 'ilniqe_score' data.
+    :return: A MOS score ranging from 1 (bad) to 5 (excellent).
+    """
+    # Get the IL-NIQE score
+    ilniqe_score = measure_ilniqe(img_path)
+
+    # Load the CSV file
+    df = pd.read_csv(csv_path)
+
+    # Assuming the CSV has a column named 'ilniqe_score'
+    min_score = df['ilniqe_score'].min()
+    max_score = df['ilniqe_score'].max()
+
+    # Ensure the IL-NIQE score is within the range observed in the CSV
+    if not (min_score <= ilniqe_score <= max_score):
+        raise ValueError("IL-NIQE score is out of the range of observed values.")
+
+    # Linearly scale the IL-NIQE score to MOS
+    # Transform IL-NIQE from [min_score, max_score] to [1, 5]
+    mos_score = 1 + 4 * (max_score - ilniqe_score) / (max_score - min_score)
+    return mos_score
 
 
 def main():

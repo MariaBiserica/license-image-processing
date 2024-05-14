@@ -9,6 +9,7 @@ from repo.assessment_features.brightness_assessment.brightness_level_assessment 
 from repo.assessment_features.sharpness_assessment.sharpness_level_assessment import calculate_scaled_sharpness_score
 from repo.assessment_features.chromatic_assessment.chromatic_level_assessment import calculate_scaled_chromatic_score
 from repo.brisque_release_online.brisque_master.brisque.brisque_quality import calculate_scaled_brisque_score
+from repo.niqe_release_online.niqe import calculate_scaled_niqe_score
 from repo.ilniqe_release_online.ilniqe_master.ilniqe import calculate_scaled_ilniqe_score
 
 app = Flask(__name__)
@@ -24,6 +25,7 @@ BRIGHTNESS_CSV_PATH = '../assessment_features/brightness_assessment/Koniq10k_bri
 SHARPNESS_CSV_PATH = '../assessment_features/sharpness_assessment/Koniq10k_sharpness_scores.csv'
 CHROMATIC_CSV_PATH = '../assessment_features/chromatic_assessment/Koniq10k_chromatic_scores.csv'
 SVR_MODEL_PATH = '../assessment_features/chromatic_assessment/svr_model.joblib'
+NIQE_SCORES_CSV_PATH = '../analysis/analyze_niqe/niqe_scores_Koniq10k.csv'
 ILNIQE_SCORES_CSV_PATH = '../analysis/analyze_ilniqe/ilniqe_scores_Koniq10k.csv'
 
 # Load your model (adjust 'elm_model.joblib' as needed)
@@ -80,6 +82,10 @@ def predict_quality():
         brisque_score, brisque_time = calculate_scaled_brisque_score(file_path)
         results['brisque_score'] = f"{brisque_score:.4f}"
         results['brisque_time'] = brisque_time
+    if 'NIQE' in selected_metrics:
+        niqe_score, niqe_time = calculate_scaled_niqe_score(file_path, NIQE_SCORES_CSV_PATH)
+        results['niqe_score'] = f"{niqe_score:.4f}"
+        results['niqe_time'] = niqe_time
     if 'ILNIQE' in selected_metrics:
         ilniqe_score, ilniqe_time = calculate_scaled_ilniqe_score(file_path, ILNIQE_SCORES_CSV_PATH)
         results['ilniqe_score'] = f"{ilniqe_score:.4f}"

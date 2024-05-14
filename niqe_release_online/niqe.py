@@ -1,4 +1,7 @@
+import time
+
 import numpy as np
+import pandas as pd
 import scipy.misc
 import scipy.io
 from os.path import dirname
@@ -239,6 +242,41 @@ def measure_niqe(img_path):
     quality_score = niqe(img)
 
     return quality_score
+
+
+def calculate_scaled_niqe_score(img_path, csv_path):
+    """
+    Scale an NIQE score to a MOS range from 1 to 5.
+
+    :param niqe_score: The NIQE score to convert.
+    :param csv_path: Path to the CSV file containing 'niqe_score' data.
+    :return: A MOS score ranging from 1 (bad) to 5 (excellent).
+    """
+    # Start timer
+    start_time = time.time()
+
+    # Get the IL-NIQE score
+    niqe_score = measure_niqe(img_path)
+
+    # Load the CSV file
+    df = pd.read_csv(csv_path)
+
+    # Assuming the CSV has a column named 'niqe_score'
+    min_score = df['niqe_score'].min()
+    max_score = df['niqe_score'].max()
+
+    # Ensure the NIQE score is within the range observed in the CSV
+    if not (min_score <= niqe_score <= max_score):
+        raise ValueError("NIQE score is out of the range of observed values.")
+
+    # Linearly scale the NIQE score to MOS
+    # Transform NIQE from [min_score, max_score] to [1, 5]
+    niqe_scaled_score = 1 + 4 * (max_score - niqe_score) / (max_score - min_score)
+
+    end_time = time.time()  # End timer
+    elapsed_time = end_time - start_time  # Compute duration
+
+    return niqe_scaled_score, f"{elapsed_time:.4f} s"  # Return score and time taken
 
 
 def main():

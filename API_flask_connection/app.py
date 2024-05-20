@@ -103,6 +103,67 @@ def predict_quality():
     return jsonify(results)
 
 
+@app.route('/predict_batch', methods=['POST'])
+def predict_quality_batch():
+    print("Received request for batch quality prediction")
+
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    if 'metric' not in request.form:
+        return jsonify({'error': 'Missing metrics'}), 400
+
+    metric = request.form['metric']
+    file = request.files['image']
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(file_path)
+
+    image = cv2.imread(file_path)
+    results = {}
+
+    # Example for one metric
+    if metric == 'Noise':
+        noise_score, noise_time = calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH)
+        results['noise_score'] = f"{noise_score:.4f}"
+        results['noise_time'] = noise_time
+    if metric == 'Contrast':
+        contrast_score, contrast_time = calculate_scaled_contrast_score(file_path, CONTRAST_CSV_PATH)
+        results['contrast_score'] = f"{contrast_score:.4f}"
+        results['contrast_time'] = contrast_time
+    if metric == 'Brightness':
+        brightness_score, brightness_time = calculate_scaled_brightness_score(file_path, BRIGHTNESS_CSV_PATH)
+        results['brightness_score'] = f"{brightness_score:.4f}"
+        results['brightness_time'] = brightness_time
+    if metric == 'Sharpness':
+        sharpness_score, sharpness_time = calculate_scaled_sharpness_score(file_path, SHARPNESS_CSV_PATH)
+        results['sharpness_score'] = f"{sharpness_score:.4f}"
+        results['sharpness_time'] = sharpness_time
+    if metric == 'Chromatic Quality':
+        chromatic_score, chromatic_time = calculate_scaled_chromatic_score(file_path, CHROMATIC_CSV_PATH, SVR_MODEL_PATH)
+        results['chromatic_score'] = f"{chromatic_score:.4f}"
+        results['chromatic_time'] = chromatic_time
+    if metric == 'BRISQUE':
+        brisque_score, brisque_time = calculate_scaled_brisque_score(file_path)
+        results['brisque_score'] = f"{brisque_score:.4f}"
+        results['brisque_time'] = brisque_time
+    if metric == 'NIQE':
+        niqe_score, niqe_time = calculate_scaled_niqe_score(file_path, NIQE_SCORES_CSV_PATH)
+        results['niqe_score'] = f"{niqe_score:.4f}"
+        results['niqe_time'] = niqe_time
+    if metric == 'ILNIQE':
+        ilniqe_score, ilniqe_time = calculate_scaled_ilniqe_score(file_path, ILNIQE_SCORES_CSV_PATH)
+        results['ilniqe_score'] = f"{ilniqe_score:.4f}"
+        results['ilniqe_time'] = ilniqe_time
+    if metric == 'VGG16':
+        vgg16_score, vgg16_time = measure_vgg16(file_path)
+        results['vgg16_score'] = f"{vgg16_score:.4f}"
+        results['vgg16_time'] = vgg16_time
+
+    os.remove(file_path)  # Clean up the uploaded image after processing
+    return jsonify(results)
+
+
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)

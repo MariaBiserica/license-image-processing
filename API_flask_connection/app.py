@@ -1,4 +1,7 @@
-from flask import Flask, request, jsonify, json
+import io
+
+from PIL import Image
+from flask import Flask, request, send_file, jsonify, json
 from werkzeug.utils import secure_filename
 import os
 import cv2
@@ -12,6 +15,8 @@ from repo.brisque_release_online.brisque_master.brisque.brisque_quality import c
 from repo.niqe_release_online.niqe import calculate_scaled_niqe_score
 from repo.ilniqe_release_online.ilniqe_master.ilniqe import calculate_scaled_ilniqe_score
 from repo.VGG16.vgg16_quality_score import measure_vgg16
+
+from repo.modification_features.image_modification_spline_tool import modify_image
 
 app = Flask(__name__)
 
@@ -162,6 +167,27 @@ def predict_quality_batch():
 
     os.remove(file_path)  # Clean up the uploaded image after processing
     return jsonify(results)
+
+
+@app.route('/modify-image-spline', methods=['POST'])
+def modify_image_endpoint():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    image_file = request.files['image']
+    control_points_str = request.form['control_points']
+
+    # Convert control points from string to list of tuples
+    control_points = [tuple(map(int, point.split(','))) for point in control_points_str.split(';')]
+
+    image = Image.open(image_file.stream)
+    modified_image = modify_image(image, control_points)
+
+    img_io = io.BytesIO()
+    modified_image.save(img_io, 'JPEG')
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
 
 
 if __name__ == '__main__':

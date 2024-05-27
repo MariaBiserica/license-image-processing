@@ -201,8 +201,17 @@ def apply_gaussian_blur():
         return jsonify({'error': 'No file provided'}), 400
 
     image_file = request.files['image']
+    blur_amount = float(request.form.get('blur_amount', 15))
+    blur_amount = round(blur_amount)  # Ensure blur amount is an integer
+
+    # Make sure blur_amount is positive and odd
+    if blur_amount < 1:
+        blur_amount = 1
+    if blur_amount % 2 == 0:
+        blur_amount += 1
+
     image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
-    blurred_image = cv2.GaussianBlur(image, (15, 15), 0)
+    blurred_image = cv2.GaussianBlur(image, (blur_amount, blur_amount), 0)
 
     img_io = io.BytesIO()
     is_success, buffer = cv2.imencode(".jpg", blurred_image)
@@ -235,8 +244,17 @@ def apply_color_space_conversion():
         return jsonify({'error': 'No file provided'}), 400
 
     image_file = request.files['image']
+    color_space = request.form.get('color_space', 'HSV')
     image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
-    converted_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    if color_space == 'HSV':
+        converted_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    elif color_space == 'LAB':
+        converted_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+    elif color_space == 'YCrCb':
+        converted_image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
+    else:
+        return jsonify({'error': 'Invalid color space'}), 400
 
     img_io = io.BytesIO()
     is_success, buffer = cv2.imencode(".jpg", converted_image)

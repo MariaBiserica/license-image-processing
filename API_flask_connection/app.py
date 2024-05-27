@@ -336,6 +336,25 @@ def apply_morphological_transformation():
     return send_file(img_io, mimetype='image/jpeg')
 
 
+@app.route('/apply_inverse_color', methods=['POST'])
+def apply_inverse_color():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    image_file = request.files['image']
+    image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
+
+    # Inverse color transformation
+    inverted_image = cv2.bitwise_not(image)
+
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", inverted_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
+
+
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)

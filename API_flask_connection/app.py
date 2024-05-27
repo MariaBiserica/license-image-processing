@@ -23,15 +23,11 @@ app = Flask(__name__)
 
 # Directory where uploaded images will be stored
 UPLOAD_FOLDER = 'uploads'
-MODIFIED_FOLDER = 'modified'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MODIFIED_FOLDER'] = MODIFIED_FOLDER
 
-# Ensure directories exist
+# Ensure directory exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
-if not os.path.exists(MODIFIED_FOLDER):
-    os.makedirs(MODIFIED_FOLDER)
 
 # Path to the CSV file with contrast scores for scaling
 NOISE_CSV_PATH = '../assessment_features/noise_assessment/Koniq10k_noise_scores.csv'
@@ -207,11 +203,13 @@ def apply_gaussian_blur():
     image_file = request.files['image']
     image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
     blurred_image = cv2.GaussianBlur(image, (15, 15), 0)
-    modified_image_path = os.path.join(app.config['MODIFIED_FOLDER'], f"blurred_{uuid.uuid4().hex}.jpg")
-    cv2.imwrite(modified_image_path, blurred_image)
 
-    with open(modified_image_path, 'rb') as f:
-        return send_file(io.BytesIO(f.read()), mimetype='image/jpeg')
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", blurred_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
 
 
 @app.route('/apply_edge_detection', methods=['POST'])
@@ -222,11 +220,13 @@ def apply_edge_detection():
     image_file = request.files['image']
     image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
     edges = cv2.Canny(image, 100, 200)
-    modified_image_path = os.path.join(app.config['MODIFIED_FOLDER'], f"edges_{uuid.uuid4().hex}.jpg")
-    cv2.imwrite(modified_image_path, edges)
 
-    with open(modified_image_path, 'rb') as f:
-        return send_file(io.BytesIO(f.read()), mimetype='image/jpeg')
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", edges)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
 
 
 @app.route('/apply_color_space_conversion', methods=['POST'])
@@ -237,11 +237,13 @@ def apply_color_space_conversion():
     image_file = request.files['image']
     image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
     converted_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    modified_image_path = os.path.join(app.config['MODIFIED_FOLDER'], f"converted_{uuid.uuid4().hex}.jpg")
-    cv2.imwrite(modified_image_path, converted_image)
 
-    with open(modified_image_path, 'rb') as f:
-        return send_file(io.BytesIO(f.read()), mimetype='image/jpeg')
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", converted_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
 
 
 @app.route('/apply_histogram_equalization', methods=['POST'])
@@ -252,11 +254,13 @@ def apply_histogram_equalization():
     image_file = request.files['image']
     image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
     equalized_image = cv2.equalizeHist(image)
-    modified_image_path = os.path.join(app.config['MODIFIED_FOLDER'], f"equalized_{uuid.uuid4().hex}.jpg")
-    cv2.imwrite(modified_image_path, equalized_image)
 
-    with open(modified_image_path, 'rb') as f:
-        return send_file(io.BytesIO(f.read()), mimetype='image/jpeg')
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", equalized_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
 
 
 @app.route('/apply_image_rotation', methods=['POST'])
@@ -271,11 +275,13 @@ def apply_image_rotation():
     center = (width / 2, height / 2)
     rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1)
     rotated_image = cv2.warpAffine(image, rotation_matrix, (width, height))
-    modified_image_path = os.path.join(app.config['MODIFIED_FOLDER'], f"rotated_{uuid.uuid4().hex}.jpg")
-    cv2.imwrite(modified_image_path, rotated_image)
 
-    with open(modified_image_path, 'rb') as f:
-        return send_file(io.BytesIO(f.read()), mimetype='image/jpeg')
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", rotated_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
 
 
 if __name__ == '__main__':

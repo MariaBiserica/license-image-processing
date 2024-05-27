@@ -302,6 +302,40 @@ def apply_image_rotation():
     return send_file(img_io, mimetype='image/jpeg')
 
 
+@app.route('/apply_morphological_transformation', methods=['POST'])
+def apply_morphological_transformation():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    if 'operation' not in request.form or 'kernel_size' not in request.form:
+        return jsonify({'error': 'Operation or kernel size not provided'}), 400
+
+    image_file = request.files['image']
+    operation = request.form['operation']
+    kernel_size = int(request.form['kernel_size'])
+
+    image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+
+    if operation == 'dilation':
+        transformed_image = cv2.dilate(image, kernel, iterations=1)
+    elif operation == 'erosion':
+        transformed_image = cv2.erode(image, kernel, iterations=1)
+    elif operation == 'opening':
+        transformed_image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+    elif operation == 'closing':
+        transformed_image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
+    else:
+        return jsonify({'error': 'Invalid operation'}), 400
+
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", transformed_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
+
+
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)

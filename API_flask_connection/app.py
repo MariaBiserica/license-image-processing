@@ -355,6 +355,43 @@ def apply_inverse_color():
     return send_file(img_io, mimetype='image/jpeg')
 
 
+@app.route('/apply_color_enhancement', methods=['POST'])
+def apply_color_enhancement():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    image_file = request.files['image']
+    hue_scalar = float(request.form.get('hue_scalar', 1.0))
+    saturation_scalar = float(request.form.get('saturation_scalar', 1.0))
+    value_scalar = float(request.form.get('value_scalar', 1.0))
+
+    image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
+
+    # Convert image to HSV color space
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    # Split the channels
+    h, s, v = cv2.split(hsv_image)
+
+    # Enhance the hue, saturation, and value channels
+    h = np.clip(h * hue_scalar, 0, 255).astype(np.uint8)
+    s = np.clip(s * saturation_scalar, 0, 255).astype(np.uint8)
+    v = np.clip(v * value_scalar, 0, 255).astype(np.uint8)
+
+    # Merge the channels back
+    enhanced_hsv_image = cv2.merge([h, s, v])
+
+    # Convert back to BGR color space
+    enhanced_image = cv2.cvtColor(enhanced_hsv_image, cv2.COLOR_HSV2BGR)
+
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", enhanced_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
+
+
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)

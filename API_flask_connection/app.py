@@ -392,6 +392,38 @@ def apply_color_enhancement():
     return send_file(img_io, mimetype='image/jpeg')
 
 
+@app.route('/apply_sharpening', methods=['POST'])
+def apply_sharpening():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    image_file = request.files['image']
+    kernel_size = int(request.form.get('kernel_size', 3))
+
+    # Make sure kernel_size is odd and greater than 1
+    if kernel_size % 2 == 0:
+        kernel_size += 1
+    if kernel_size < 1:
+        kernel_size = 3
+
+    image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
+
+    # Create a sharpening kernel
+    kernel = np.zeros((kernel_size, kernel_size), dtype=np.float32)
+    kernel[kernel_size // 2, kernel_size // 2] = 2.0
+    kernel -= np.ones((kernel_size, kernel_size), dtype=np.float32) / (kernel_size * kernel_size)
+
+    # Apply the sharpening kernel to the image
+    sharpened_image = cv2.filter2D(image, -1, kernel)
+
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", sharpened_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
+
+
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)

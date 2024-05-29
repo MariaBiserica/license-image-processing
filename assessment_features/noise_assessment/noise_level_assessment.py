@@ -72,21 +72,21 @@ def calculate_scaled_noise_score(elm_model, image, csv_path):
     overall_noise = calculate_noise_score(elm_model, image)
     print(f"Image Noise Score: {overall_noise[0]}")
 
-    # Load the CSV to find min and max scores for scaling
-    df = pd.read_csv(csv_path)
-    min_score, max_score = df['Noise_Score'].min(), df['Noise_Score'].max()
-
-    # Define the new range for scaling
-    new_min, new_max = 1, 5
-
-    # Scale the overall contrast score
-    scaled_noise_score = new_min + (new_max - new_min) * (overall_noise[0] - min_score) / (max_score - min_score)
-    print(f"Scaled Image Noise Score: {scaled_noise_score}")
+    # # Load the CSV to find min and max scores for scaling
+    # df = pd.read_csv(csv_path)
+    # min_score, max_score = df['Noise_Score'].min(), df['Noise_Score'].max()
+    #
+    # # Define the new range for scaling
+    # new_min, new_max = 1, 5
+    #
+    # # Scale the overall contrast score
+    # scaled_noise_score = new_min + (new_max - new_min) * (overall_noise[0] - min_score) / (max_score - min_score)
+    # print(f"Scaled Image Noise Score: {scaled_noise_score}")
 
     end_time = time.time()  # End timer
     elapsed_time = end_time - start_time  # Compute duration
 
-    return scaled_noise_score, f"{elapsed_time:.4f} s"  # Return score and time taken
+    return overall_noise[0], f"{elapsed_time:.4f} s"  # Return score and time taken
 
 
 def gather_scores_on_dataset(image_folder_path, output_csv_path, model):
@@ -107,13 +107,14 @@ def gather_scores_on_dataset(image_folder_path, output_csv_path, model):
 
 
 def main():
-    # dataset_dir = '../../VGG16/data/512x384'
-    dataset_dir = '../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all'
-    model_path = 'elm_model.joblib'
+    dataset_dir = '../../VGG16/data/512x384'
+    # dataset_dir = '../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all'
+    model_path = 'elm_model_Koniq10k_trained.joblib'
     if os.path.exists(model_path):
         elm_model = load_elm_model(model_path)
     else:
         dataset_csv_path = '../../VGG16/data/koniq10k_scores_and_distributions.csv'
+        # dataset_csv_path = '../../alternate_VGG16/data/LIVE2/LIVE2_MOS_scores.csv'
 
         print("Loading dataset...")
         df = pd.read_csv(dataset_csv_path)
@@ -122,15 +123,12 @@ def main():
         x_train, y_train = extract_features_for_dataset(df, dataset_dir)
         elm_model = train_elm_model(x_train, y_train, save_path=model_path)
 
-    output_csv_path = 'LIVE2_noise_scores.csv'
-    scaled_output_csv_path = 'Scaled_LIVE2_noise_scores.csv'
-    gather_scores_on_dataset(dataset_dir, output_csv_path, elm_model)
-    scale_scores_in_csv(output_csv_path, scaled_output_csv_path)
-
-    # image_path = '../../VGG16/data/512x384/826373.jpg'
-    # scores_csv_path = 'Koniq10k_noise_scores.csv'
-    # image = cv2.imread(image_path)
-    # calculate_scaled_noise_score(elm_model, image, scores_csv_path)
+    # output_csv_path = 'LIVE2_noise_scores.csv'
+    # output_csv_path = 'Koniq10k_noise_scores.csv'
+    # scaled_output_csv_path = 'Scaled_LIVE2_noise_scores.csv'
+    # scaled_output_csv_path = 'Scaled_Koniq10k_noise_scores.csv'
+    # gather_scores_on_dataset(dataset_dir, output_csv_path, elm_model)
+    # scale_scores_in_csv(output_csv_path, scaled_output_csv_path)
 
 
 if __name__ == "__main__":

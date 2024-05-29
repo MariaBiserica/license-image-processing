@@ -40,7 +40,7 @@ NIQE_SCORES_CSV_PATH = '../analysis/analyze_niqe/niqe_scores_Koniq10k.csv'
 ILNIQE_SCORES_CSV_PATH = '../analysis/analyze_ilniqe/ilniqe_scores_Koniq10k.csv'
 
 # Load your model (adjust 'elm_model.joblib' as needed)
-elm_model = load_elm_model('../assessment_features/noise_assessment/elm_model.joblib')
+elm_model = load_elm_model('../assessment_features/noise_assessment/elm_model_Koniq10k_trained.joblib')
 
 
 @app.route('/predict', methods=['POST'])

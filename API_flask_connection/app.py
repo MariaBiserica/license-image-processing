@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 from flask import Flask, request, send_file, jsonify, json
 from werkzeug.utils import secure_filename
+from repo.assessment_features.noise_assessment2.noise_level_assessment import calculate_noise_score
 from repo.assessment_features.noise_assessment.noise_level_assessment import (load_elm_model,
                                                                               calculate_scaled_noise_score)
 from repo.assessment_features.contrast_assessment.contrast_level_assessment import calculate_scaled_contrast_score
@@ -70,7 +71,7 @@ def predict_quality():
 
     # Conditionally calculate scores
     if 'Noise' in selected_metrics:
-        noise_score, noise_time = calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH)
+        noise_score, noise_time = calculate_noise_score(file_path)
         results['noise_score'] = f"{noise_score:.4f}"
         results['noise_time'] = noise_time
     if 'Contrast' in selected_metrics:
@@ -105,6 +106,11 @@ def predict_quality():
         vgg16_score, vgg16_time = measure_vgg16(file_path)
         results['vgg16_score'] = f"{vgg16_score:.4f}"
         results['vgg16_time'] = vgg16_time
+    if 'BIQA using Three Noise-related Statistical Features' in selected_metrics:
+        biqa_score, biqa_time = calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH)
+        results['biqa_score'] = f"{biqa_score:.4f}"
+        results['biqa_time'] = biqa_time
+
 
     # Clean up the uploaded image after processing
     os.remove(file_path)

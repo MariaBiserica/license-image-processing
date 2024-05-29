@@ -37,7 +37,7 @@ def calculate_noise_score(file_path):
     end_time = time.time()
     computation_time = end_time - start_time
 
-    return mos_score, computation_time
+    return mos_score, f"{computation_time:.4f} s"
 
 
 def noise_to_mos(sigma):

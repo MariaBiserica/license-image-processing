@@ -424,6 +424,57 @@ def apply_sharpening():
     return send_file(img_io, mimetype='image/jpeg')
 
 
+@app.route('/apply_median_blur', methods=['POST'])
+def apply_median_blur():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    image_file = request.files['image']
+    kernel_size = int(request.form.get('kernel_size', 3))
+
+    # Make sure kernel_size is odd and greater than 1
+    if kernel_size % 2 == 0:
+        kernel_size += 1
+    if kernel_size < 1:
+        kernel_size = 3
+
+    image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
+
+    # Apply median filter
+    filtered_image = cv2.medianBlur(image, kernel_size)
+
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", filtered_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
+
+
+@app.route('/apply_noise_reduction', methods=['POST'])
+def apply_noise_reduction():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    image_file = request.files['image']
+    h = int(request.form.get('h', 10))  # Filter strength
+    hForColorComponents = int(request.form.get('hForColorComponents', 10))
+    templateWindowSize = int(request.form.get('templateWindowSize', 7))
+    searchWindowSize = int(request.form.get('searchWindowSize', 21))
+
+    image = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
+
+    # Apply noise reduction
+    denoised_image = cv2.fastNlMeansDenoisingColored(image, None, h, hForColorComponents, templateWindowSize, searchWindowSize)
+
+    img_io = io.BytesIO()
+    is_success, buffer = cv2.imencode(".jpg", denoised_image)
+    img_io.write(buffer)
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/jpeg')
+
+
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)

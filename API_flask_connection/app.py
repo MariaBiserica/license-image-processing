@@ -106,7 +106,7 @@ def predict_quality():
         vgg16_score, vgg16_time = measure_vgg16(file_path)
         results['vgg16_score'] = f"{vgg16_score:.4f}"
         results['vgg16_time'] = vgg16_time
-    if 'BIQA using Three Noise-related Statistical Features' in selected_metrics:
+    if 'BIQA Noise Stats' in selected_metrics:
         biqa_score, biqa_time = calculate_scaled_noise_score(elm_model, image, NOISE_CSV_PATH)
         results['biqa_score'] = f"{biqa_score:.4f}"
         results['biqa_time'] = biqa_time

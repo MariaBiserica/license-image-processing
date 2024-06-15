@@ -4,7 +4,7 @@ import cv2
 import csv
 import os
 import pandas as pd
-from repo.assessment_features.utils.scale_scores import scale_scores_in_csv
+from repo.assessment_features.utils_custom.scale_scores import scale_scores_in_csv
 
 
 def calculate_sharpness_score(image_path):

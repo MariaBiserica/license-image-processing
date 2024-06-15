@@ -12,8 +12,8 @@ import skimage.io
 from libsvm import svmutil
 import os
 # from brisque.models import MODEL_PATH
-from repo.brisque_release_online.brisque_master.brisque.models import MODEL_PATH
-from repo.analysis.performance_metrics import rmse, mae
+from .models import MODEL_PATH
+# from repo.analysis.performance_metrics import rmse, mae
 
 
 class BRISQUE:

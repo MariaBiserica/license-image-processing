@@ -211,8 +211,8 @@ def niqe(input_img_data):
     params = scipy.io.loadmat(join(module_path, 'data', 'niqe_image_params.mat'))
 
     # Write parameters to a text file
-    output_file = 'niqe_model_params_contents.txt'
-    write_params_to_txt(params, output_file)
+    # output_file = 'niqe_model_params_contents.txt'
+    # write_params_to_txt(params, output_file)
 
     pop_mu = np.ravel(params["pop_mu"])
     pop_cov = params["pop_cov"]

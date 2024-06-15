@@ -9,7 +9,7 @@ from scipy.stats import kurtosis, skew
 from sklearn.svm import SVR
 from joblib import load
 from sklearn.impute import SimpleImputer
-from repo.assessment_features.utils.scale_scores import scale_scores_in_csv
+from repo.assessment_features.utils_custom.scale_scores import scale_scores_in_csv
 
 
 def convert_to_hsv(image_path):

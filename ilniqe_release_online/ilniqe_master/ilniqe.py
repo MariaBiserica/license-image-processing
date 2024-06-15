@@ -13,7 +13,8 @@ from scipy.optimize import fmin
 
 import time
 # import ray
-from repo.ilniqe_release_online.ilniqe_master.matlab_resize import MATLABLikeResize
+from .matlab_resize import MATLABLikeResize
+
 
 def reorder_image(img, input_order='HWC'):
     """Reorder images to 'HWC' order.
@@ -483,6 +484,8 @@ def calculate_scaled_ilniqe_score(img_path, csv_path):
 
     # Linearly scale the IL-NIQE score to MOS
     # Transform IL-NIQE from [min_score, max_score] to [1, 5]
+    print(f'IL-NIQE Max: {max_score:.4f}')
+    print(f'IL-NIQE Min: {min_score:.4f}')
     ilniqe_scaled_score = 1 + 4 * (max_score - ilniqe_score) / (max_score - min_score)
 
     end_time = time.time()  # End timer

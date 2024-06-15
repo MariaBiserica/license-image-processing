@@ -4,7 +4,7 @@ import csv
 import os
 import time
 import pandas as pd
-from repo.assessment_features.utils.scale_scores import scale_scores_in_csv
+from repo.assessment_features.utils_custom.scale_scores import scale_scores_in_csv
 
 
 def jnd_model(l_channel):
@@ -195,6 +195,8 @@ def calculate_scaled_contrast_score(image_path, csv_path):
 
     # Scale the overall contrast score
     scaled_contrast_score = new_min + (new_max - new_min) * (overall_contrast - min_score) / (max_score - min_score)
+    print(f"Contrast Max: {max_score}")
+    print(f"Contrast Min: {min_score}")
     print(f"Scaled Image Contrast Score: {scaled_contrast_score}")
 
     end_time = time.time()  # End timer
@@ -220,12 +222,17 @@ def gather_scores_on_dataset(image_folder_path, output_csv_path):
 
 
 def main():
-    # image_folder_path = '../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all'  # Update this path to the correct folder where your images are stored
-    # output_csv_path = 'LIVE2_contrast_scores.csv'  # Update this path to where you want to save the CSV file
+    # Update this path to the correct folder where your images are stored
+    # image_folder_path = '../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all'
+
+    # Update this path to where you want to save the CSV file
+    # output_csv_path = 'LIVE2_contrast_scores.csv'
+
     # gather_scores_on_dataset(image_folder_path, output_csv_path)
 
     # Optionally call the scaling function here if you want it to be part of the main process
-    # scaled_csv_path = 'Scaled_LIVE2_contrast_scores.csv'  # Update this path to where you want to save the scaled scores CSV file
+    # Update this path to where you want to save the scaled scores CSV file
+    # scaled_csv_path = 'Scaled_LIVE2_contrast_scores.csv'
     # scale_scores_in_csv(output_csv_path, scaled_csv_path)
 
     image_path = '../../VGG16/data/512x384/826373.jpg'

@@ -5,7 +5,7 @@ import csv
 import os
 import numpy as np
 import pandas as pd
-from repo.assessment_features.utils.scale_scores import scale_scores_in_csv
+from repo.assessment_features.utils_custom.scale_scores import scale_scores_in_csv
 
 
 def convert_to_linear_light(image):

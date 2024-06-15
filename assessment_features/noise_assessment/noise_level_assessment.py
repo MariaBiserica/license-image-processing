@@ -6,10 +6,9 @@ import csv
 import numpy as np
 import pandas as pd
 from joblib import dump, load
-from repo.assessment_features.noise_assessment.feature_extraction import (
-    calculate_variance, calculate_power_spectral_entropy, calculate_wavelet_std_dev)
-from repo.assessment_features.noise_assessment.extreme_learning_machine import ELM
-from repo.assessment_features.utils.scale_scores import scale_scores_in_csv
+from .feature_extraction import (calculate_variance, calculate_power_spectral_entropy, calculate_wavelet_std_dev)
+from .extreme_learning_machine import ELM
+from repo.assessment_features.utils_custom.scale_scores import scale_scores_in_csv
 
 
 def extract_features_for_dataset(df, images_dir):
@@ -35,7 +34,7 @@ def extract_features_for_dataset(df, images_dir):
     return np.array(x), np.array(y)
 
 
-def train_elm_model(x_train, y_train, save_path='elm_model.joblib'):
+def train_elm_model(x_train, y_train, save_path):
     print("Initializing and training the ELM model...")
     elm_model = ELM(n_hidden_units=100, alpha=0.1)
     elm_model.fit(x_train, y_train)
@@ -48,7 +47,7 @@ def train_elm_model(x_train, y_train, save_path='elm_model.joblib'):
     return elm_model
 
 
-def load_elm_model(load_path='elm_model.joblib'):
+def load_elm_model(load_path):
     print(f"Loading model from {load_path}...")
     elm_model = load(load_path)
     return elm_model

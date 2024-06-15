@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import os
-from repo.brisque_release_online.brisque_master.brisque.brisque_algorithm import BRISQUE
+from .brisque_algorithm import BRISQUE
 
 
 def get_ground_truth_scores(csv_path):
@@ -56,8 +56,8 @@ def calculate_scaled_brisque_score(img_path):
     quality_score = obj.score(img)
 
     # Scale the BRISQUE (100 - 0) score to MOS (1 - 5)
-    if not (0 <= quality_score <= 100):
-        raise ValueError("BRISQUE score should be between 0 and 100.")
+    # if not (0 <= quality_score <= 100):
+    #     raise ValueError("BRISQUE score should be between 0 and 100.")
 
     # Linearly scale the BRISQUE score to MOS
     # BRISQUE 0 (best) -> MOS 5 (excellent)

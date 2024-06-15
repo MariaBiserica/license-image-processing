@@ -1,6 +1,5 @@
 import os
 import time
-
 import cv2
 import csv
 import numpy as np
@@ -178,6 +177,9 @@ def calculate_scaled_chromatic_score(image_path, csv_path, svr_model_path):
 
     # Scale the overall contrast score
     scaled_chromatic_score = new_min + (new_max - new_min) * (overall_chromatic - min_score) / (max_score - min_score)
+    print(f"Original Image Chromatic Score: {overall_chromatic}")
+    print(f"Chromatic Max: {max_score}")
+    print(f"Chromatic Min: {min_score}")
     print(f"Scaled Image Chromatic Score: {scaled_chromatic_score}")
 
     end_time = time.time()  # End timer

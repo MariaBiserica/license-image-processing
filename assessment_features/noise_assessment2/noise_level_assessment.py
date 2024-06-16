@@ -1,8 +1,10 @@
+import os
 import cv2
 import numpy as np
 from skimage.util import img_as_float
 from skimage.restoration import estimate_sigma
 import time
+import csv
 
 
 def calculate_noise_score(file_path):
@@ -30,6 +32,7 @@ def calculate_noise_score(file_path):
 
     # Average the sigma values to get a single overall noise score
     sigma_est = np.mean([sigma_est_r, sigma_est_g, sigma_est_b])
+    print(f"Noise Score (Sigma): {sigma_est}")
 
     # Convert noise level to MOS scale (1-5)
     mos_score = noise_to_mos(sigma_est)
@@ -60,10 +63,34 @@ def noise_to_mos(sigma):
     return mos_score
 
 
-# Example usage
+def process_folder(folder_path, output_csv_path):
+    """
+    Processes all images in a specified folder, calculates the noise score for each,
+    and saves the results to a CSV file.
+    """
+    results = []
+    image_files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+    total_images = len(image_files)
+
+    # Iterate over all files in the folder
+    for idx, file_name in enumerate(image_files, 1):
+        file_path = os.path.join(folder_path, file_name)
+        try:
+            mos_score, computation_time = calculate_noise_score(file_path)
+            results.append([file_name, mos_score, computation_time])
+            print(f"Processing image {idx}/{total_images}: {file_name}")
+        except ValueError as e:
+            print(f"Skipping {file_name}: {e}")
+
+    # Save results to a CSV file
+    with open(output_csv_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Image Name", "MOS Score", "Computation Time"])
+        writer.writerows(results)
+
+
 if __name__ == "__main__":
-    # file_path = '../../VGG16/data/512x384/826373.jpg'  # Original img
-    file_path = r'C:\Users\maria\Downloads\modified_image_1717018351182.jpg'  # Denoised img
-    mos_score, computation_time = calculate_noise_score(file_path)
-    print(f"MOS Score: {mos_score:.4f}")  # Print MOS score with 4 decimal places
-    print(f"Computation Time: {computation_time} seconds")
+    folder_path = '../../VGG16/data/512x384'
+    output_csv_path = 'Koniq10k_noise_scores.csv'
+    process_folder(folder_path, output_csv_path)
+    print(f"Results saved to {output_csv_path}")

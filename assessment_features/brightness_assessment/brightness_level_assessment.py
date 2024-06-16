@@ -1,5 +1,4 @@
 import time
-
 import cv2
 import csv
 import os
@@ -82,6 +81,8 @@ def calculate_scaled_brightness_score(image_path, csv_path):
 
     # Scale the overall contrast score
     scaled_brightness_score = new_min + (new_max - new_min) * (overall_brightness - min_score) / (max_score - min_score)
+    print(f"Brightness Max: {max_score}")
+    print(f"Brightness Min: {min_score}")
     print(f"Scaled Image Brightness Score: {scaled_brightness_score}")
 
     end_time = time.time()  # End timer

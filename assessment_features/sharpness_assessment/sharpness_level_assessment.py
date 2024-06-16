@@ -1,8 +1,8 @@
 import time
-
 import cv2
 import csv
 import os
+import numpy as np
 import pandas as pd
 from repo.assessment_features.utils_custom.scale_scores import scale_scores_in_csv
 
@@ -30,7 +30,8 @@ def calculate_sharpness_score(image_path):
 
 def calculate_scaled_sharpness_score(image_path, csv_path):
     """
-    Calculate the contrast score for a single image and scale it using the min and max from the CSV file.
+    Calculate the contrast score for a single image and scale it using the min and max from the CSV file,
+    focusing on the range where most values lie.
 
     :param image_path: Path to the image file.
     :param csv_path: Path to the CSV file with contrast scores.
@@ -39,17 +40,25 @@ def calculate_scaled_sharpness_score(image_path, csv_path):
     start_time = time.time()  # Start timer
 
     # Calculate the contrast scores for the image
-    overall_brightness = calculate_sharpness_score(image_path)
+    overall_sharpness = calculate_sharpness_score(image_path)
 
     # Load the CSV to find min and max scores for scaling
     df = pd.read_csv(csv_path)
-    min_score, max_score = df['Sharpness_Score'].min(), df['Sharpness_Score'].max()
+
+    # Calculate the 5th and 95th percentiles to exclude outliers
+    min_score = np.percentile(df['Sharpness_Score'], 5)
+    max_score = np.percentile(df['Sharpness_Score'], 95)
 
     # Define the new range for scaling
     new_min, new_max = 1, 5
 
     # Scale the overall contrast score
-    scaled_sharpness_score = new_min + (new_max - new_min) * (overall_brightness - min_score) / (max_score - min_score)
+    scaled_sharpness_score = new_min + (new_max - new_min) * (overall_sharpness - min_score) / (max_score - min_score)
+    scaled_sharpness_score = max(new_min, min(scaled_sharpness_score, new_max))  # Ensure the score is within the range
+
+    print(f"Sharpness Max (95th percentile): {max_score}")
+    print(f"Sharpness Min (5th percentile): {min_score}")
+    print(f"Image Sharpness Score: {overall_sharpness}")
     print(f"Scaled Image Sharpness Score: {scaled_sharpness_score}")
 
     end_time = time.time()  # End timer

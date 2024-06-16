@@ -71,21 +71,27 @@ def calculate_scaled_noise_score(elm_model, image, csv_path):
     overall_noise = calculate_noise_score(elm_model, image)
     print(f"Image Noise Score: {overall_noise[0]}")
 
-    # # Load the CSV to find min and max scores for scaling
-    # df = pd.read_csv(csv_path)
-    # min_score, max_score = df['Noise_Score'].min(), df['Noise_Score'].max()
-    #
-    # # Define the new range for scaling
-    # new_min, new_max = 1, 5
-    #
-    # # Scale the overall contrast score
-    # scaled_noise_score = new_min + (new_max - new_min) * (overall_noise[0] - min_score) / (max_score - min_score)
-    # print(f"Scaled Image Noise Score: {scaled_noise_score}")
+    # Load the CSV to find min and max scores for scaling
+    df = pd.read_csv(csv_path)
+    # Filter out noise scores less than 1
+    filtered_scores = df['Noise_Score'][df['Noise_Score'] >= 1]
+    # Calculate the minimum and maximum noise scores from the filtered data
+    min_score = filtered_scores.min()
+    max_score = df['Noise_Score'].max()
+
+    # Define the new range for scaling
+    new_min, new_max = 1, 5
+
+    # Scale the overall contrast score
+    scaled_noise_score = new_min + (new_max - new_min) * (overall_noise[0] - min_score) / (max_score - min_score)
+    print(f"Noise BIQA Max: {max_score}")
+    print(f"Noise BIQA Min: {min_score}")
+    print(f"Scaled Image Noise Score: {scaled_noise_score}")
 
     end_time = time.time()  # End timer
     elapsed_time = end_time - start_time  # Compute duration
 
-    return overall_noise[0], f"{elapsed_time:.4f} s"  # Return score and time taken
+    return scaled_noise_score, f"{elapsed_time:.4f} s"  # Return score and time taken
 
 
 def gather_scores_on_dataset(image_folder_path, output_csv_path, model):

@@ -36,10 +36,8 @@ def plcc(y_true, y_pred):
     return plcc_value
 
 
-# Function to predict the quality of the image using the loaded model
 def predict_image_quality(model, image_path):
     new_image = Image.open(image_path)
-    # de vazut daca trebuie resize sau daca pot sa iau pe bucati daca e imaginea mai mare sau sa fac crop
     new_image = new_image.resize((384, 512))
     new_image = img_to_array(new_image)
     new_image /= 255.0  # normalize - so the pixels are between the values 0-1
@@ -63,13 +61,3 @@ def measure_vgg16(img_path):
     elapsed_time = end_time - start_time  # Compute duration
 
     return predicted_quality_score, f"{elapsed_time:.4f} s"  # Return score and time taken
-
-
-def main():
-    image_path = "data\\512x384\\826373.jpg"
-    predicted_quality_score = measure_vgg16(image_path)
-    print(f'VGG16 Predicted Quality Score: {predicted_quality_score:.4f}')
-
-
-if __name__ == "__main__":
-    main()

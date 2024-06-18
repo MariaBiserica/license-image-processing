@@ -1,11 +1,9 @@
 import time
-import numpy as np
-from PIL import Image
 import tensorflow as tf
-from keras.preprocessing.image import img_to_array
 from keras.models import load_model
 from keras import backend as K
 from scipy.stats import spearmanr
+from repo.VGG16.utils.prediction_methods import predict_image_quality
 
 
 def custom_accuracy(y_true, y_pred, threshold=0.1):
@@ -34,17 +32,6 @@ def plcc(y_true, y_pred):
     denominator = K.sqrt(K.sum(K.square(centered_true)) * K.sum(K.square(centered_pred)))
     plcc_value = numerator / denominator
     return plcc_value
-
-
-def predict_image_quality(model, image_path):
-    new_image = Image.open(image_path)
-    new_image = new_image.resize((384, 512))
-    new_image = img_to_array(new_image)
-    new_image /= 255.0  # normalize - so the pixels are between the values 0-1
-    new_image = np.expand_dims(new_image, axis=0)
-    predicted_quality = model.predict(new_image)
-    predicted_quality = np.clip(predicted_quality, 1, 5)
-    return predicted_quality[0][0]
 
 
 def measure_vgg16(img_path):

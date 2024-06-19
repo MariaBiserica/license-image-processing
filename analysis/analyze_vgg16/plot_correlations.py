@@ -72,9 +72,9 @@ def plot_error_metrics(rmse, mae):
 
 
 def main():
-    predicted_csv = 'predicted_scores_on_LIVE2_model_trained_on_LIVE2_valid_new.csv'
-    # ground_truth_csv = '../../VGG16/data/koniq10k_scores_and_distributions.csv'
-    ground_truth_csv = '../../alternate_VGG16/data/LIVE2/LIVE2_MOS_scores.csv'
+    predicted_csv = 'predicted_scores_on_LIVE2_model_trained_on_Koniq10k_130.csv'
+    # ground_truth_csv = '../../alternate_VGG16/data/Koniq_10k/koniq10k_scores_and_distributions.csv'
+    ground_truth_csv = '../../alternate_VGG16/LIVE_release2/LIVE2_MOS_scores.csv'
 
     # Calculate correlations
     srcc, plcc = calculate_correlations(predicted_csv, ground_truth_csv)

@@ -24,7 +24,7 @@ def measure_vgg16(model, img_path):
 
 
 def evaluate_dataset(dataset_path):
-    model = load_model('../../../alternate_model_Koniq10k_nofreeze_huber_100/model_de_test.h5',
+    model = load_model('../../../alternate_model_Koniq10k_nofreeze_huber_130/best_model.h5',
                        custom_objects={
                            'custom_accuracy': custom_accuracy,
                            'rmse': rmse,
@@ -48,15 +48,15 @@ def evaluate_dataset(dataset_path):
         predicted_score = measure_vgg16(model, img_path)
         results.append((img_name, predicted_score))
 
-    with open('selectedVGG16_scores_on_Koniq10k.csv', 'w', newline='') as csvfile:
+    with open('predicted_scores_on_LIVE2_model_trained_on_Koniq10k_130.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['image_name', 'MOS_predicted_score'])
         writer.writerows(results)
 
 
 def main():
-    dataset_path = "../../alternate_VGG16/data/Koniq_10k/512x384"
-    # dataset_path = "../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all"
+    # dataset_path = "../../VGG16/data/512x384"
+    dataset_path = "../../alternate_VGG16/LIVE_release2/databaserelease2/LIVE_all"
     evaluate_dataset(dataset_path)
     print("Evaluation completed and saved to predicted_scores.csv")
 

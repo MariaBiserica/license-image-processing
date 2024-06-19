@@ -235,7 +235,7 @@ def main():
     # scaled_csv_path = 'Scaled_LIVE2_contrast_scores.csv'
     # scale_scores_in_csv(output_csv_path, scaled_csv_path)
 
-    image_path = '../../VGG16/data/512x384/826373.jpg'
+    image_path = '../../alternate_VGG16/data/Koniq_10k/512x384/826373.jpg'
     scores_csv_path = 'Koniq10k_contrast_scores.csv'
     calculate_scaled_contrast_score(image_path, scores_csv_path)
 

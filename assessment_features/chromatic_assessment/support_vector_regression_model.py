@@ -81,8 +81,8 @@ def evaluate_model(model, X_test, y_test):
     print(f"Mean Absolute Error (MAE): {mae}")
 
 
-image_dir = '../../VGG16/data/512x384'
-scores_csv_path = '../../VGG16/data/koniq10k_scores_and_distributions.csv'
+image_dir = '../../alternate_VGG16/data/Koniq_10k/512x384'
+scores_csv_path = '../../alternate_VGG16/data/Koniq_10k/koniq10k_scores_and_distributions.csv'
 
 print("Script started.")
 df = load_dataset(scores_csv_path)

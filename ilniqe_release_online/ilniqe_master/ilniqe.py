@@ -497,7 +497,7 @@ def calculate_scaled_ilniqe_score(img_path, csv_path):
 def main():
     import warnings
 
-    image_path = "..\\..\\VGG16\\data\\512x384\\826373.jpg"
+    image_path = "../../alternate_VGG16/data/Koniq_10k/512x384\\826373.jpg"
 
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', category=RuntimeWarning)

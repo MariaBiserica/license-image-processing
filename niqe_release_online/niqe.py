@@ -280,7 +280,7 @@ def calculate_scaled_niqe_score(img_path, csv_path):
 
 
 def main():
-    image_path = "..\\VGG16\\data\\512x384\\826373.jpg"
+    image_path = "../alternate_VGG16/data/Koniq_10k/512x384\\826373.jpg"
     quality_score = measure_niqe(image_path)
     print(f'NIQE Quality Score: {quality_score:.4f}')
 

@@ -90,7 +90,7 @@ def process_folder(folder_path, output_csv_path):
 
 
 if __name__ == "__main__":
-    folder_path = '../../VGG16/data/512x384'
+    folder_path = '../../alternate_VGG16/data/Koniq_10k/512x384'
     output_csv_path = 'Koniq10k_noise_scores.csv'
     process_folder(folder_path, output_csv_path)
     print(f"Results saved to {output_csv_path}")

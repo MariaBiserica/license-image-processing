@@ -2,14 +2,9 @@ import os
 import pandas as pd
 import numpy as np
 
-# from repo.brisque_release_learnopencv.Python.libsvm.python.brisquequality \
-#     import measure_brisque as brisque_learnopencv_score
 from repo.brisque_release_online.brisque_master.brisque.brisque_quality \
     import measure_brisque as brisque_score
-# from repo.ilniqe_release_online.ilniqe_master.ilniqe \
-#     import measure_ilniqe as ilniqe_score
 from repo.niqe_release_online.niqe import measure_niqe as niqe_score
-# from repo.VGG16.vgg16_quality_score import measure_vgg16 as vgg16_score
 from repo.analysis.performance_metrics import srcc, plcc, rmse, mae
 
 
@@ -23,12 +18,12 @@ def calculate_metrics(predicted_scores, ground_truth_scores):
 
 
 def main():
-    csv_file_path = '..\\VGG16\\data\\koniq10k_scores_and_distributions.csv'
+    csv_file_path = '../alternate_VGG16/data/Koniq_10k/koniq10k_scores_and_distributions.csv'
     df = pd.read_csv(csv_file_path)
     mos_mapping = dict(zip(df['image_name'], df['MOS']))
 
     # Define the folder containing the images
-    image_folder_path = "..\\VGG16\\data\\512x384"
+    image_folder_path = "../alternate_VGG16/data/Koniq_10k/512x384"
     image_files = [f for f in os.listdir(image_folder_path) if f.endswith(('.jpg', '.jpeg', '.png'))]
 
     # File to store the results
@@ -52,9 +47,7 @@ def main():
                 image_path = os.path.join(image_folder_path, image_name)
                 if image_name in mos_mapping:  # Check if the image has a corresponding MOS value
                     brisque_quality = brisque_score(image_path)
-                    # il_niqe_quality = ilniqe_score(image_path)
                     niqe_quality = niqe_score(image_path)
-                    # vgg16_quality = vgg16_score(image_path)
 
                     mos_score = mos_mapping.get(image_name, np.nan)
 

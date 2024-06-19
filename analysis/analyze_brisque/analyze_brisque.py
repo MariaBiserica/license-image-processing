@@ -8,7 +8,7 @@ import csv
 from repo.analysis.scale_brisque_to_mos import transform_score
 
 # Path to the image folder
-image_folder_path = '../../VGG16/data/512x384'
+image_folder_path = '../../alternate_VGG16/data/Koniq_10k/512x384'
 
 # Paths and names for the output CSV files
 output_csv_path = 'output_scores_Koniq10k.csv'
@@ -17,7 +17,7 @@ big_scores_csv_path = 'big_scores_Koniq10k.csv'
 na_scores_csv_path = 'na_scores_Koniq10k.csv'
 
 # Path to the CSV file with ground truth scores
-csv_file_path = '../../VGG16/data/koniq10k_scores_and_distributions.csv'
+csv_file_path = '../../alternate_VGG16/data/Koniq_10k/koniq10k_scores_and_distributions.csv'
 df = pd.read_csv(csv_file_path)
 mos_mapping = dict(zip(df['image_name'], df['MOS']))
 

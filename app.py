@@ -13,7 +13,7 @@ from assessment_features.chromatic_assessment.chromatic_level_assessment import 
 from brisque_release_online.brisque_master.brisque.brisque_quality import calculate_scaled_brisque_score
 from niqe_release_online.niqe import calculate_scaled_niqe_score
 from ilniqe_release_online.ilniqe_master.ilniqe import calculate_scaled_ilniqe_score
-from VGG16.vgg16_quality_score import measure_vgg16
+from repo.alternate_VGG16.vgg16_quality_score import measure_vgg16
 
 from modification_features.image_modification_spline_tool import modify_image
 
@@ -55,9 +55,6 @@ def predict_quality():
 
     # Read selected metrics
     selected_metrics = set(json.loads(request.form['metrics']))
-
-    # Load image
-    image = cv2.imread(file_path)
 
     # Initialize results dictionary
     results = {}

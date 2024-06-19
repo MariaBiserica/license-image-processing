@@ -112,13 +112,13 @@ def gather_scores_on_dataset(image_folder_path, output_csv_path, model):
 
 
 def main():
-    dataset_dir = '../../VGG16/data/512x384'
+    dataset_dir = '../../alternate_VGG16/data/Koniq_10k/512x384'
     # dataset_dir = '../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all'
     model_path = 'elm_model_Koniq10k_trained.joblib'
     if os.path.exists(model_path):
         elm_model = load_elm_model(model_path)
     else:
-        dataset_csv_path = '../../VGG16/data/koniq10k_scores_and_distributions.csv'
+        dataset_csv_path = '../../alternate_VGG16/data/Koniq_10k/koniq10k_scores_and_distributions.csv'
         # dataset_csv_path = '../../alternate_VGG16/data/LIVE2/LIVE2_MOS_scores.csv'
 
         print("Loading dataset...")

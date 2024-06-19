@@ -108,10 +108,10 @@ def evaluate_performance(brisque_instance, image_path, ground_truth_scores_dict)
 
 
 def main():
-    csv_path = "..\\..\\..\\VGG16\\data\\koniq10k_scores_and_distributions.csv"
+    csv_path = "../../../alternate_VGG16/data/Koniq_10k/koniq10k_scores_and_distributions.csv"
     ground_truth_scores_dict = get_ground_truth_scores(csv_path)
 
-    image_path = "..\\..\\..\\VGG16\\data\\512x384\\826373.jpg"
+    image_path = "../../../alternate_VGG16/data/Koniq_10k/512x384\\826373.jpg"
     image_name = os.path.basename(image_path)  # Extract the filename
 
     # Get the ground truth score for the given image

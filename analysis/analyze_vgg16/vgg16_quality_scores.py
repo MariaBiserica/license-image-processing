@@ -55,7 +55,7 @@ def evaluate_dataset(dataset_path):
 
 
 def main():
-    dataset_path = "../../VGG16/data/512x384"
+    dataset_path = "../../alternate_VGG16/data/Koniq_10k/512x384"
     # dataset_path = "../../alternate_VGG16/data/LIVE2/databaserelease2/LIVE_all"
     evaluate_dataset(dataset_path)
     print("Evaluation completed and saved to predicted_scores.csv")

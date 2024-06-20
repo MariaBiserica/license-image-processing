@@ -4,7 +4,6 @@ import csv
 import os
 import time
 import pandas as pd
-from repo.assessment_features.utils_custom.scale_scores import scale_scores_in_csv
 
 
 def jnd_model(l_channel):

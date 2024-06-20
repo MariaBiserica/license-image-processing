@@ -67,6 +67,9 @@ def calculate_scaled_brisque_score(img_path):
     end_time = time.time()  # End timer
     elapsed_time = end_time - start_time  # Compute duration
 
+    print(f"BRISQUE score original: {quality_score}")
+    print(f"BRISQUE score scaled to MOS: {scaled_quality_score}")
+
     return scaled_quality_score, f"{elapsed_time:.4f} s"  # Return score and time taken
 
 

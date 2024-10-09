@@ -1,4 +1,4 @@
-Digital Image Quality Assessment and Editing - Backend
+#Digital Image Quality Assessment and Editing - Backend
 
 This backend component is developed in Python and uses the Flask framework to handle the application's logic, including estimating digital image quality using various no-reference image quality assessment (NR-IQA) algorithms. Leveraging both deep learning and traditional methods, the backend provides comprehensive evaluations of image quality without needing a reference image. Key features include:
 
